@@ -1,0 +1,11 @@
+__pycache__
+.DS_Store
+.idea
+app/__pycache__
+sp/__pycache__/
+authentication/__pycache__/
+secretsnotlib.py
+.vscode/
+env
+settings.py
+.env
