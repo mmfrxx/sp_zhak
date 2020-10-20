@@ -9,3 +9,4 @@ secretsnotlib.py
 env
 settings.py
 .env
+activate
