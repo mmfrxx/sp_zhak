@@ -7,6 +7,5 @@ authentication/__pycache__/
 secretsnotlib.py
 .vscode/
 env
-settings.py
 .env
 activate
