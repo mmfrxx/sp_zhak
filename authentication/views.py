@@ -10,6 +10,7 @@ import datetime
 from rest_framework.permissions import IsAuthenticated
 import rest_framework_simplejwt
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
+from django_email_verification import sendConfirm
 
 
 # Create your views here.
@@ -20,9 +21,9 @@ class RegisterView(GenericAPIView):
         user = request.data
         serializer = self.serializer_class(data=user)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user = serializer.save()
         user_data = serializer.data
-
+        sendConfirm(user)
         return Response(user_data, status=HTTP_201_CREATED)
 
 

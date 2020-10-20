@@ -42,7 +42,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
     # is_staff = models.BooleanField(default=False)
     is_supervisor = models.BooleanField(default=False)
     first_name = models.CharField(max_length=255, unique=False, null=False)
