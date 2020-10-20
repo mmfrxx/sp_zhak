@@ -48,9 +48,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255, unique=False, null=False)
     last_name = models.CharField(max_length=255, unique=False,null=False)
     is_organizationOwner = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    is_team_lead = models.BooleanField(default=False)
-    is_marketplace_admin = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)  
+    is_team_lead = models.BooleanField(default=False)  
+    is_marketplace_admin = models.BooleanField(default=False)  
+    is_manager = models.BooleanField(default=False)
 
 
     USERNAME_FIELD = 'email'

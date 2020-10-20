@@ -48,6 +48,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         first_name = attrs.get('first_name', '')
         last_name = attrs.get('last_name', '')
         
+        if '@' in email:
+            domen = email.split('@')[1]
+        else:
+            raise serializers.ValidationError('Email is invalid')
+
+        if domen != "nu.edu.kz":
+            raise serializers.ValidationError('Use your NU email.')
+
         if not username.isalnum():
             raise serializers.ValidationError('The username should contain only alphanumeric characters')
         if not first_name.isalnum() or not last_name.isalpha():
