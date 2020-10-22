@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'app',
     'rest_framework_simplejwt.token_blacklist',
     'django_email_verification',
+    'ourplatform',
 ]
 
 REST_FRAMEWORK = {
