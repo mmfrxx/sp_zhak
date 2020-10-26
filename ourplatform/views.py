@@ -78,11 +78,15 @@ class Add_team_member(APIView):
                     user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
                 if User.objects.filter(username=request.data.get('username')).exists():
                     user_to_add = User.objects.get(username=request.data.get('username'))
-                    if project.objects.filter(users__id=user_to_add.id).count() == 0:
+                    print(user_to_add.id)
+                    print(user.id)
+                    if Project.objects.filter(users__username=user_to_add.username).count() == 0:
                         project.users.add(user_to_add)
                         project.save()
                         return Response("Success", HTTP_200_OK)
                     return Response("Member already exists.", HTTP_400_BAD_REQUEST)
-
+                return Response("User does not exist.", HTTP_400_BAD_REQUEST)
             return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
         return Response("Project is required.", HTTP_400_BAD_REQUEST)
+
+
