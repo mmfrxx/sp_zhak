@@ -9,9 +9,6 @@ class Project(models.Model):
     telegram_bonus = models.IntegerField(default=50)
     slack_bonus = models.IntegerField(default=50)
     git_bonus = models.IntegerField(default=50)
-    users = models.ManyToManyField(User,
-                                   related_name="%(app_label)s_%(class)s_related",
-                                   related_query_name="%(app_label)s_%(class)ss", )
 
 class ProjectAndUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
