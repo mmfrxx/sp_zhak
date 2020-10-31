@@ -17,7 +17,7 @@ class ProjectView(APIView):
         user = request.user
         if (user.is_manager or user.is_organizationOwner or user.is_admin) and user.is_active:
             name = request.data.get('name')
-            telegram_bonus = request.data.get('tg_bonus')
+            telegram_bonus = request.data.get('telegram_bonus')
             slack_bonus = request.data.get('slack_bonus')
             git_bonus = request.data.get('git_bonus')
 
