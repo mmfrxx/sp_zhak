@@ -7,7 +7,7 @@ from .models import Project, ProjectAndUser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.response import Response
-
+from authentication.serializers import UserSerializer
 
 # Create your views here.
 
@@ -37,8 +37,7 @@ class ProjectView(APIView):
             proj.save()
             serializer = ProjectSerializer(proj)
             return Response(serializer.data, HTTP_200_OK)
-        else:
-            return Response("You are not allowed to add projects.", HTTP_400_BAD_REQUEST)
+        return Response("You are not allowed to add projects.", HTTP_400_BAD_REQUEST)
 
 
 class Add_team_lead(APIView):
@@ -58,8 +57,7 @@ class Add_team_lead(APIView):
                         project.save()
                         ProjectAndUser.objects.create(user=team_lead, project=project)
                         return Response("Success", HTTP_200_OK)
-                else:
-                    return Response("Team lead for this project already exists.", HTTP_400_BAD_REQUEST)
+                return Response("Team lead for this project already exists.", HTTP_400_BAD_REQUEST)
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
         return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
 
@@ -74,8 +72,7 @@ class Add_team_member(APIView):
         project_pk = request.data.get('pk')
         if project_pk:
             project = Project.objects.get(pk=project_pk)
-            if (
-                    user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
+            if (user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
                 if User.objects.filter(username=request.data.get('username')).exists():
                     user_to_add = User.objects.get(username=request.data.get('username'))
                     if not ProjectAndUser.objects.filter(user__username=user_to_add.username, project_id=project.id).exists():
@@ -109,3 +106,63 @@ class Remove_team_member(APIView):
                 return Response("User does not exist.", HTTP_400_BAD_REQUEST)
             return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
         return Response("Project is required.", HTTP_400_BAD_REQUEST)
+
+class GetUserInfoView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs.get("pk")
+        if user.is_active:
+            requested_user = User.objects.filter(pk = pk).first()
+            if requested_user:
+                req_user_data = self.serializer_class(requested_user).data
+                if not user.is_manager and not user.is_organizationOwner and not user.is_admin:
+                    req_user_data['account_bonus'] = 0
+                return Response(data=req_user_data, status=HTTP_200_OK)
+            return Response('User does not exist', HTTP_400_BAD_REQUEST)
+        return Response('Please activate your account', HTTP_400_BAD_REQUEST)    
+
+class GetProjectsForUserView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = ProjectSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs.get("pk")
+        if user.is_active:
+            requested_user = User.objects.filter(pk=pk).first()
+            if requested_user:
+                projects = [pr.project for pr in ProjectAndUser.objects.filter(user=requested_user)]
+                projects_data = ProjectSerializer(projects, many=True).data
+                return Response(projects_data, HTTP_200_OK)
+            return Response('User does not exists', HTTP_400_BAD_REQUEST)
+        return Response('Please activate your account', HTTP_400_BAD_REQUEST)  
+
+class GetUsersOfProjectView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs.get("pk")
+        project = Project.objects.filter(pk=pk).first()
+        if project:
+            users = [pr.user for pr in ProjectAndUser.objects.filter(project=project)]
+            users = UserSerializer(users, many=True).data
+            if not user.is_manager and not user.is_organizationOwner and not user.is_admin:
+                for user in users:
+                    user['account_bonus'] = 0
+            return Response(users, HTTP_200_OK)
+        return Response('Project does not exist', HTTP_400_BAD_REQUEST)
+        
+
+
+
+
+
+
