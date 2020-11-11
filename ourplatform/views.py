@@ -88,7 +88,7 @@ class Add_team_member(APIView):
         return Response("Project is required.", HTTP_400_BAD_REQUEST)
 
 
-# request: user, pk, username
+
 class Remove_team_member(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
@@ -202,7 +202,7 @@ class GetProjectEvents(APIView):
         project = Project.objects.filter(pk=pk).first()
 
         if project:
-            if ProjectAndUser.objects.filter(user=user, project=project).exists():
+            if ProjectAndUser.objects.filter(user=user, project=project).exists() or user.is_manager or user.is_organizationOwner or user.is_admin :
                 if ProjectAndUser.objects.filter(user=user, project=project).exists():
 
                     number_of_events = request.GET.get('limit', 0)
@@ -239,7 +239,7 @@ class PostUserInfo(APIView):
         pk = kwargs.get("pk")
         if user.is_active:
             requested_user = User.objects.filter(pk=pk).first()
-            if user == requested_user:
+            if user == requested_user  or user.is_admin:
                 serializer = self.serializer_class(requested_user, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
