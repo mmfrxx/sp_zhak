@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from .views import *
 
 urlpatterns = [
@@ -9,10 +9,7 @@ urlpatterns = [
     path('get-user-info/<int:pk>', GetUserInfoView.as_view()),
     path('get-projects-for-user/<int:pk>', GetProjectsForUserView.as_view()),
     path('get-users-of-project/<int:pk>', GetUsersOfProjectView.as_view()),
-    path('get-project-activities/<int:pk>/<int:limit>', GetProjectEvents.as_view(), name='get_project_events'),
-    path('get-project-activities/<int:pk>', GetProjectEvents.as_view(), name='get_project_events'),
-
-
+    re_path(r'^get_project_activities/(?P<pk>[0-9]+)', GetProjectEvents.as_view(), name='get_project_events'),
     path('change-user-information/<int:pk>', PostUserInfo.as_view(), name='get_project_events'),
     path('delete-project/<int:pk>', DeleteProjectView.as_view(), name='delete-project' ),
 
