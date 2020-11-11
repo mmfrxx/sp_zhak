@@ -197,22 +197,20 @@ class GetProjectEvents(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pk):
         user = request.user
-        pk = kwargs.get("pk")
-
         project = Project.objects.filter(pk=pk).first()
 
         if project:
             if ProjectAndUser.objects.filter(user=user, project=project).exists():
                 if ProjectAndUser.objects.filter(user=user, project=project).exists():
 
-                    number_of_events = kwargs.get('limit')
+                    number_of_events = request.GET.get('limit', 0)
 
                     data = []
                     events = Event.objects.order_by('-timestamp').select_subclasses()
                     if number_of_events:
-                        events = Event.objects.order_by('-timestamp').select_subclasses()[:number_of_events]
+                        events = Event.objects.order_by('-timestamp').select_subclasses()[:int(number_of_events)]
                     for event in events:
                         if isinstance(event, TelegramEvent):
                             event_data = TelegramEventSerializer(event).data
