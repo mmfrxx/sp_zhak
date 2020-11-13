@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.response import Response
 from authentication.serializers import UserSerializer
+from .utils import serialize_events
 
 
 # Create your views here.
@@ -86,7 +87,6 @@ class Add_team_member(APIView):
                 return Response("User does not exist.", HTTP_400_BAD_REQUEST)
             return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
         return Response("Project is required.", HTTP_400_BAD_REQUEST)
-
 
 
 class Remove_team_member(APIView):
@@ -202,29 +202,33 @@ class GetProjectEvents(APIView):
         project = Project.objects.filter(pk=pk).first()
 
         if project:
-            if ProjectAndUser.objects.filter(user=user, project=project).exists() or user.is_manager or user.is_organizationOwner or user.is_admin :
-                if ProjectAndUser.objects.filter(user=user, project=project).exists():
-
-                    number_of_events = request.GET.get('limit', 0)
-
-                    data = []
-                    events = Event.objects.order_by('-timestamp').select_subclasses()
-                    if number_of_events:
-                        events = Event.objects.order_by('-timestamp').select_subclasses()[:int(number_of_events)]
-                    for event in events:
-                        if isinstance(event, TelegramEvent):
-                            event_data = TelegramEventSerializer(event).data
-                            data.append(event_data)
-                        if isinstance(event, SlackEvent):
-                            event_data = SlackEventSerializer(event).data
-                            data.append(event_data)
-                        if isinstance(event, GithubEvent):
-                            event_data = GitHubEventSerializer(event).data
-                            data.append(event_data)
-
-                    return Response(data, HTTP_200_OK)
+            if ProjectAndUser.objects.filter(user=user,
+                                             project=project).exists() or user.is_manager or user.is_organizationOwner or user.is_admin:
+                number_of_events = request.GET.get('limit', 0)
+                events = Event.objects.filter(project=project).order_by('-timestamp').select_subclasses()
+                if number_of_events:
+                    events = Event.objects.filter(project=project).order_by('-timestamp').select_subclasses()[
+                             :int(number_of_events)]
+                return serialize_events(events)
             return Response('User not in project', HTTP_400_BAD_REQUEST)
         return Response('Project does not exist', HTTP_400_BAD_REQUEST)
+
+
+class GetUserEvents(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+
+    def get(self, request, username):
+        requested_user = User.objects.filter(username=username).first()
+        user = request.user
+        if user.is_manager or user.is_organizationOwner or user.is_admin or requested_user == user:
+            number_of_events = request.GET.get('limit', 0)
+            events = Event.objects.filter(user=requested_user).order_by('-timestamp').select_subclasses()
+            if number_of_events:
+                events = Event.objects.filter(user=requested_user).order_by('-timestamp').select_subclasses()[
+                             :int(number_of_events)]
+            return serialize_events(events)
+        return Response('You are not allowed to do this', HTTP_400_BAD_REQUEST)
 
 
 # the user that is being changed should be the same user who wants to change info
@@ -239,7 +243,7 @@ class PostUserInfo(APIView):
         pk = kwargs.get("pk")
         if user.is_active:
             requested_user = User.objects.filter(pk=pk).first()
-            if user == requested_user  or user.is_admin:
+            if user == requested_user or user.is_admin:
                 serializer = self.serializer_class(requested_user, data=request.data, partial=True)
                 if serializer.is_valid():
                     serializer.save()
