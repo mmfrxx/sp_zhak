@@ -10,11 +10,10 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     project_name = serializers.CharField(read_only=True, source="project.name")
-
+    username = serializers.CharField(read_only=True, source="user.username")
     class Meta:
         model = Event
-        fields = ('pk', 'timestamp', 'user', 'project_name')
-
+        fields = ('pk', 'timestamp', 'username', 'project_name')
 
 
 
@@ -27,15 +26,12 @@ class TelegramEventSerializer(EventSerializer):
 
 
 
-
 class SlackEventSerializer(EventSerializer):
     event_bonus  = serializers.CharField(read_only=True, source="project.telegram_bonus")
     event_type = serializers.CharField(read_only=True, default='Slack')
     class Meta(EventSerializer.Meta):
         model = SlackEvent
-        fields = ['message', 'channel', 'event_bonus', 'event_type']
-
-
+        fields = EventSerializer.Meta.fields+('message', 'channel', 'event_bonus', 'event_type')
 
 
 class GitHubEventSerializer(EventSerializer):
