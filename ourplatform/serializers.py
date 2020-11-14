@@ -27,7 +27,7 @@ class TelegramEventSerializer(EventSerializer):
 
 
 class SlackEventSerializer(EventSerializer):
-    event_bonus  = serializers.CharField(read_only=True, source="project.telegram_bonus")
+    event_bonus  = serializers.CharField(read_only=True, source="project.slack_bonus")
     event_type = serializers.CharField(read_only=True, default='Slack')
     class Meta(EventSerializer.Meta):
         model = SlackEvent
@@ -36,7 +36,7 @@ class SlackEventSerializer(EventSerializer):
 
 class GitHubEventSerializer(EventSerializer):
     event_type = serializers.CharField(read_only=True, default='GitHub')
-    event_bonus  = serializers.CharField(read_only=True, source="project.telegram_bonus")
+    event_bonus  = serializers.CharField(read_only=True, source="project.git_bonus")
 
     class Meta(EventSerializer.Meta):
         model = GithubEvent
