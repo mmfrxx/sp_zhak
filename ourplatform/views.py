@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
 from rest_framework.response import Response
 from authentication.serializers import UserSerializer
+from sp.permissions import IsActive, IsManagerOwnerAdminTeamLead
 
 # Create your views here.
 
@@ -119,7 +120,7 @@ class GetUserInfoView(APIView):
             requested_user = User.objects.filter(pk = pk).first()
             if requested_user:
                 req_user_data = self.serializer_class(requested_user).data
-                if not user.is_manager and not user.is_organizationOwner and not user.is_admin:
+                if not user.is_manager and not user.is_organizationOwner and not user.is_admin and user.username != requested_user.username:
                     req_user_data['account_bonus'] = 0
                 return Response(data=req_user_data, status=HTTP_200_OK)
             return Response('User does not exist', HTTP_400_BAD_REQUEST)
@@ -159,6 +160,32 @@ class GetUsersOfProjectView(APIView):
                     user['account_bonus'] = 0
             return Response(users, HTTP_200_OK)
         return Response('Project does not exist', HTTP_400_BAD_REQUEST)
+
+class  ReducePoints(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [ IsAuthenticated,]
+
+    def post(self, request):
+        user = request.user 
+        username = request.data.get('username')
+        points = request.data.get('points')
+        project_pk = request.data.get('pk')
+        if project_pk:
+            project = Project.objects.get(pk=project_pk)
+            if (user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
+                student = User.objects.filter(username=username).first()
+                if student:
+                    student.account_bonus -= min(student.account_bonus, points)
+                    student.save()
+                    return Response(data=UserSerializer(student).data, status=HTTP_200_OK)
+                return Response("No such user", HTTP_400_BAD_REQUEST)
+            return Response("Access is denied", HTTP_400_BAD_REQUEST)
+        return Response("No project pk", HTTP_400_BAD_REQUEST)
+
+
+
+
+
         
 
 

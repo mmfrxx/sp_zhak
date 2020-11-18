@@ -9,5 +9,5 @@ urlpatterns = [
     path('get-user-info/<int:pk>', GetUserInfoView.as_view()),
     path('get-projects-for-user/<int:pk>', GetProjectsForUserView.as_view()),
     path('get-users-of-project/<int:pk>', GetUsersOfProjectView.as_view()),
-
+    path('reduce-points', ReducePoints.as_view()),
 ]
