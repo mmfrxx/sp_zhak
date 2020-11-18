@@ -4,3 +4,4 @@ djangorestframework_simplejwt
 psycopg2-binary
 django-cors-headers
 django-email-verification==0.0.7
+django-model-utils
