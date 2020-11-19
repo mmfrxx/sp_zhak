@@ -13,7 +13,7 @@ class LoginSerializer(serializers.ModelSerializer):
     access_token = serializers.SerializerMethodField('get_access_token')
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'refresh_token', 'access_token',
+        fields = ['pk','email', 'password', 'username', 'refresh_token', 'access_token',
                   ]
 
     def validate(self, attrs):
@@ -30,6 +30,7 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Email is not verified')
 
         return {
+            'pk' : user.pk,
             'email' : user.email,
             'username' : user.username,
             'tokens' : user.tokens

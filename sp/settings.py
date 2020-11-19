@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'authentication',
-    'app',
     'rest_framework_simplejwt.token_blacklist',
     'django_email_verification',
     'ourplatform',
