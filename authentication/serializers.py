@@ -9,8 +9,8 @@ class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=5)
     username = serializers.CharField(max_length=255, min_length=3, read_only=True)
     # tokens = serializers.CharField(max_length=68, min_length=6,read_only=True)
-    refresh_token = serializers.SerializerMethodField('get_refresh_token')
-    access_token = serializers.SerializerMethodField('get_access_token')
+    refresh_token = serializers.CharField(max_length=68, min_length=6,read_only=True)
+    access_token = serializers.CharField(max_length=68, min_length=6,read_only=True)
 
     class Meta:
         model = User
@@ -33,34 +33,28 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Account is disabled')
         if not user.is_verified:
             raise AuthenticationFailed('Email is not verified')
-
+        tokens = user.tokens()
         return {
             'pk': user.pk,
             'email': user.email,
             'username': user.username,
-            'tokens': user.tokens,
+            'tokens': tokens,
             'is_admin': user.is_admin,
             'is_organizationOwner': user.is_organizationOwner,
             'is_marketplace_admin': user.is_marketplace_admin,
-            'is_manager': user.is_manager
+            'is_manager': user.is_manager,
+            'access_token': tokens['access'],
+            'refresh_token': tokens['refresh'],
         }
-        return super().validate(attrs)
 
-
-    def get_refresh_token(self, obj):
-        tokens = obj['tokens']()
-        return tokens['refresh']
-
-    def get_access_token(self, obj):
-        tokens = obj['tokens']()
-        return tokens['access']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=8, write_only=True)
 
     class Meta:
-        model = User
+        model\
+            = User
         fields = ['email', 'username', 'password', 'first_name', 'last_name']
 
     def validate(self, attrs):
@@ -95,3 +89,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['pk', 'username', 'first_name', 'last_name', 'email', 'account_bonus']
+
+    def validate(self, attrs):
+        username = attrs.get('username', '')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({'username': ('Username is already in use')})
