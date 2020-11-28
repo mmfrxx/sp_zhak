@@ -246,8 +246,8 @@ class GetUserEvents(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, username):
-        requested_user = User.objects.filter(username=username).first()
+    def get(self, request, pk):
+        requested_user = User.objects.filter(pk=pk).first()
         user = request.user
         if user.is_manager or user.is_organizationOwner or user.is_admin or requested_user == user:
             number_of_events = request.GET.get('limit', 0)
