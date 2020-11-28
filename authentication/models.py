@@ -33,6 +33,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(username, email, first_name, last_name, password)
         user.is_superuser = True
         user.is_staff = True
+        user.is_active = True
         user.save()
         return user
 
@@ -51,6 +52,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_marketplace_admin = models.BooleanField(default=False)  
     is_manager = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    account_bonus = models.IntegerField(default=0)
     
 
     USERNAME_FIELD = 'email'

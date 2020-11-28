@@ -7,12 +7,19 @@ from rest_framework.exceptions import AuthenticationFailed
 class LoginSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=8, write_only=True)
     email = serializers.EmailField(max_length=255, min_length=5)
-    username =serializers.CharField(max_length=255,min_length=3,read_only=True)
-    tokens = serializers.CharField(max_length=68, min_length=6,read_only=True)
+    username = serializers.CharField(max_length=255, min_length=3, read_only=True)
+    # tokens = serializers.CharField(max_length=68, min_length=6,read_only=True)
+    refresh_token = serializers.CharField(max_length=68, min_length=6,read_only=True)
+    access_token = serializers.CharField(max_length=68, min_length=6,read_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'tokens']
+        fields = ['pk', 'email', 'password', 'username', 'refresh_token', 'access_token', 'is_admin',
+                  'is_organizationOwner', 'is_marketplace_admin',
+                  'is_manager'
+                  ]
+        read_only_fields = ['is_admin', 'is_organizationOwner', 'is_marketplace_admin',
+                            'is_manager']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -26,28 +33,36 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Account is disabled')
         if not user.is_verified:
             raise AuthenticationFailed('Email is not verified')
-
+        tokens = user.tokens()
         return {
-            'email' : user.email,
-            'username' : user.username,
-            'tokens' : user.tokens
+            'pk': user.pk,
+            'email': user.email,
+            'username': user.username,
+            'tokens': tokens,
+            'is_admin': user.is_admin,
+            'is_organizationOwner': user.is_organizationOwner,
+            'is_marketplace_admin': user.is_marketplace_admin,
+            'is_manager': user.is_manager,
+            'access_token': tokens['access'],
+            'refresh_token': tokens['refresh'],
         }
-        return super().validate(attrs)
+
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(max_length=68, min_length=8,write_only=True)
+    password = serializers.CharField(max_length=68, min_length=8, write_only=True)
 
     class Meta:
-        model = User
+        model\
+            = User
         fields = ['email', 'username', 'password', 'first_name', 'last_name']
 
     def validate(self, attrs):
-        email = attrs.get('email','')
+        email = attrs.get('email', '')
         username = attrs.get('username', '')
         first_name = attrs.get('first_name', '')
         last_name = attrs.get('last_name', '')
-        
+
         if '@' in email:
             domen = email.split('@')[1]
         else:
@@ -62,10 +77,20 @@ class RegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('The first or last name should contain only alphabetic characters')
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError({'username': ('Username is already in use')})
-        if User.objects.filter(email = email).exists():
-            raise serializers.ValidationError({'email' : ('Email is already in use')})
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({'email': ('Email is already in use')})
         return attrs
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['pk', 'username', 'first_name', 'last_name', 'email', 'account_bonus']
+
+    def validate(self, attrs):
+        username = attrs.get('username', '')
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({'username': ('Username is already in use')})
