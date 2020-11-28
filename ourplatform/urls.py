@@ -11,7 +11,7 @@ urlpatterns = [
     path('get-users-of-project/<int:pk>', GetUsersOfProjectView.as_view()),
     path('reduce-points', ReducePoints.as_view()),
     re_path(r'^get_project_activities/(?P<pk>[0-9]+)', GetProjectEvents.as_view(), name='get_project_events'),
-    re_path(r'^get_user_activities/(?P<username>\w+)+', GetUserEvents.as_view(), name='get_user_events'),
+    re_path(r'^get_user_activities/(?P<pk>\w+)+', GetUserEvents.as_view(), name='get_user_events'),
     path('change-user-information/<int:pk>', PostUserInfo.as_view(), name='get_project_events'),
     path('delete-project/<int:pk>', DeleteProjectView.as_view(), name='delete-project' ),
 
