@@ -53,8 +53,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(max_length=68, min_length=8, write_only=True)
 
     class Meta:
-        model\
-            = User
+        model = User
         fields = ['email', 'username', 'password', 'first_name', 'last_name']
 
     def validate(self, attrs):
@@ -94,3 +93,4 @@ class UserSerializer(serializers.ModelSerializer):
         username = attrs.get('username', '')
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError({'username': ('Username is already in use')})
+        return attrs
