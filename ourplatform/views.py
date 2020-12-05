@@ -39,6 +39,7 @@ class ProjectView(APIView):
             if git_bonus:
                 proj.git_bonus = git_bonus
             proj.save()
+            ProjectAndUser.objects.create(user=user, project=proj)
             serializer = ProjectSerializer(proj)
             return Response(serializer.data, HTTP_200_OK)
         return Response("You are not allowed to add projects.", HTTP_400_BAD_REQUEST)
