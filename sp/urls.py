@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/auth/', include('authentication.urls')),
     path('email/', include(mail_urls)),
     path('op/', include('ourplatform.urls')),
+    path('marketplace/', include('marketplace.urls'))
 ]
