@@ -10,3 +10,5 @@ secretsnotlib.py
 env
 .env
 activate
+ourplatform/migrations/
+authentication/migrations/

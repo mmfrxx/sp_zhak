@@ -1,17 +1,17 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from authentication.models import User
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
-from .serializers import ProjectSerializer, GitHubEventSerializer, TelegramEventSerializer, SlackEventSerializer
-
-from .models import Project, ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
+from .serializers import ProjectSerializer, \
+    GitHubEventSerializer, TelegramEventSerializer, SlackEventSerializer
+from .models import Project,\
+    ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication, JWTTokenUserAuthentication
+from rest_framework_simplejwt.authentication\
+    import JWTAuthentication
 from rest_framework.response import Response
 from authentication.serializers import UserSerializer
-from sp.permissions import IsActive, IsManagerOwnerAdminTeamLead
 from .utils import serialize_events
-
+from rest_framework import viewsets
 
 # Create your views here.
 
@@ -64,7 +64,7 @@ class Add_team_lead(APIView):
                         return Response("Success", HTTP_200_OK)
                 return Response("Team lead for this project already exists.", HTTP_400_BAD_REQUEST)
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
-        return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
+        return Responsese("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
 
 
 # request: user, pk, username
@@ -191,12 +191,6 @@ class  ReducePoints(APIView):
         return Response("No project pk", HTTP_400_BAD_REQUEST)
 
 
-
-
-
-        
-
-
 # request: user
 # args: pk
 class DeleteProjectView(APIView):
@@ -267,16 +261,40 @@ class PostUserInfo(APIView):
     permission_classes = [IsAuthenticated, ]
     serializer_class = UserSerializer
 
+    def check_user(self, user):
+        username = user.get('username', None)
+        first_name = user.get('first_name', None)
+        last_name = user.get('last_name', None)
+
+        if username and not username.isalnum():
+            return (True,
+                    'The username should contain only alphanumeric characters')
+        if (first_name and not first_name.isalpha())\
+           or (last_name and not last_name.isalpha()):
+            return (True,
+                    'The first or last name should contain only alphabetic characters')
+        if username and User.objects.filter(username=username).exists():
+            return (True,
+                    'Username is already in use')
+        if not username and not first_name and not last_name:
+            return (True,
+                    'Nothing to change')
+        return (False, '')
+
     def post(self, request, *args, **kwargs):
         user = request.user
         pk = kwargs.get("pk")
         if user.is_active:
             requested_user = User.objects.filter(pk=pk).first()
             if user == requested_user or user.is_admin:
-                serializer = self.serializer_class(requested_user, data=request.data, partial=True)
-                if serializer.is_valid():
-                    serializer.save()
-                    return Response(serializer.data, HTTP_200_OK)
-                return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+                check = self.check_user(request.data)
+                if not check[0]:
+                    serializer = self.serializer_class(requested_user,
+                                                       data=request.data,
+                                                       partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response(serializer.data, HTTP_200_OK)
+                return Response(check[1], HTTP_400_BAD_REQUEST)
             return Response('Permission denied', HTTP_400_BAD_REQUEST)
         return Response('User not active', HTTP_400_BAD_REQUEST)
