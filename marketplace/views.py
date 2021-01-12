@@ -21,7 +21,7 @@ class IsAdminOrMarketPlaceAdmin(permissions.BasePermission):
         return request.user.is_admin or request.user.is_marketplace_admin
 
 
-class CreateProduct(generics.CreateAPIView):
+class ProductCreateView(generics.CreateAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = ProductSerializer
     permission_classes = [IsAdminOrMarketPlaceAdmin]

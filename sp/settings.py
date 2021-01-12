@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'marketplace',
     'django_filters',
 ]
+MEDIA_URL =  '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY': 'error',
