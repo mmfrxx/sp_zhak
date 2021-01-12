@@ -13,7 +13,7 @@ class UserManager(BaseUserManager):
         if first_name is None:
             raise TypeError('Users should have a first name')
         if last_name is None:
-            raise TypeError('Users should have a last name')     
+            raise TypeError('Users should have a last name')
 
 
         user = self.model(
@@ -26,34 +26,38 @@ class UserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, username, email, first_name, last_name, password = None):
+    def create_superuser(
+            self, username, email, first_name, last_name, password=None):
         if password is None:
             raise TypeError('Password should not be null')
-        
-        user = self.create_user(username, email, first_name, last_name, password)
+
+        user = self.create_user(username, email, first_name,
+                                last_name, password)
         user.is_superuser = True
         user.is_staff = True
         user.is_active = True
         user.save()
         return user
 
+
 class User(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=255,unique=True,db_index=True)
-    email = models.EmailField(max_length=255,unique=True,db_index=True)
+    username = models.CharField(max_length=255, unique=True,
+                                db_index=True)
+    email = models.EmailField(max_length=255, unique=True,
+                              db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(default=True)
     is_active = models.BooleanField(default=False)
     is_supervisor = models.BooleanField(default=False)
     first_name = models.CharField(max_length=255, unique=False, null=False)
-    last_name = models.CharField(max_length=255, unique=False,null=False)
+    last_name = models.CharField(max_length=255, unique=False, null=False)
     is_organizationOwner = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)  
-    is_marketplace_admin = models.BooleanField(default=False)  
+    is_admin = models.BooleanField(default=False)
+    is_marketplace_admin = models.BooleanField(default=False)
     is_manager = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     account_bonus = models.IntegerField(default=0)
-    
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']

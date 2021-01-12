@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 from .views import *
 
+
 urlpatterns = [
     path('create_project', ProjectView.as_view(), name='create_project'),
     path('set_team_lead', Add_team_lead.as_view(), name='set_team_lead'),
@@ -14,5 +15,4 @@ urlpatterns = [
     re_path(r'^get_user_activities/(?P<pk>\w+)+', GetUserEvents.as_view(), name='get_user_events'),
     path('change-user-information/<int:pk>', PostUserInfo.as_view(), name='get_project_events'),
     path('delete-project/<int:pk>', DeleteProjectView.as_view(), name='delete-project' ),
-
 ]
