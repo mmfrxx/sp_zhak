@@ -8,3 +8,4 @@ django-model-utils~=4.0.0
 
 django-filter~=2.4.0
 PyJWT~=1.7.1
+django-select-multiple-field~=0.4.2
