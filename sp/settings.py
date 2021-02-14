@@ -25,7 +25,9 @@ SECRET_KEY = 'ht55&&4=x60)jvz2_+(e#t$dqx4vsm+jh@5p&=2_5^k9u@4!_h'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1',
+                 'localhost',
+                 '0d51f4561f98.ngrok.io']
 
 CORS_ORIGIN_WHITELIST = [
     "https://1e67b76bd328.ngrok.io",
@@ -33,6 +35,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:8080",
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://3fb4f88b07f2.ngrok.io",
+    "http://0d51f4561f98.ngrok.io"
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -54,8 +58,10 @@ INSTALLED_APPS = [
     'ourplatform',
     'marketplace',
     'django_filters',
+    'integrations',
+    'slackevents_sp'
 ]
-MEDIA_URL =  '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 REST_FRAMEWORK = {
@@ -172,3 +178,10 @@ EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = 'mail_body.html'
 EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
 EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/'
+
+# SLACK API Configurations
+# ----------------------------------------------
+SLACK_CLIENT_ID = os.environ.get('CLIENT_ID')
+SLACK_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+SLACK_VERIFICATION_TOKEN = os.environ.get('VERIFICATION_TOKEN')
+SLACK_BOT_USER_TOKEN = os.environ.get('SLACK_BOT_USER_TOKEN')
