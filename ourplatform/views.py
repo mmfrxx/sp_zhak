@@ -54,17 +54,17 @@ class Add_team_lead(APIView):
         if (user.is_manager or user.is_organizationOwner or user.is_admin) and user.is_active:
             project_pk = request.data.get('pk')
             if project_pk:
-                project = Project.objects.get(pk=project_pk)
-                if project.team_lead == None:
+                project = Project.objects.first(pk=project_pk)
+                if project and project.team_lead == None:
                     if User.objects.filter(username=request.data.get('username')).exists():
                         team_lead = User.objects.get(username=request.data.get('username'))
                         project.team_lead = team_lead
                         project.save()
                         ProjectAndUser.objects.create(user=team_lead, project=project)
                         return Response("Success", HTTP_200_OK)
-                return Response("Team lead for this project already exists.", HTTP_400_BAD_REQUEST)
+                return Response("Team lead for this project already exists or project does not exist.", HTTP_400_BAD_REQUEST)
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
-        return Responsese("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
+        return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
 
 
 # request: user, pk, username

@@ -1,0 +1,100 @@
+{
+   "client_msg_id":"bcda6c19-a0ab-4835-a280-e9dbb3d5c8ff",
+   "type":"message",
+   "text":"good very good",
+   "user":"U01MAV4M1JS",
+   "ts":"1613111042.001900",
+   "team":"T01M2V7706B",
+   "blocks":[
+      {
+         "type":"rich_text",
+         "block_id":"S9Ef",
+         "elements":[
+            {
+               "type":"rich_text_section",
+               "elements":[
+                  {
+                     "type":"text",
+                     "text":"good very good"
+                  }
+               ]
+            }
+         ]
+      }
+   ],
+   "channel":"C01N7JM121W",
+   "event_ts":"1613111042.001900",
+   "channel_type":"channel"
+}
+
+//direct
+{
+   "client_msg_id":"1cab0e94-bed5-4018-a94f-6f64306ae5c4",
+   "type":"message",
+   "text":"uyi",
+   "user":"U01MAV4M1JS",
+   "ts":"1613111676.000400",
+   "team":"T01M2V7706B",
+   "blocks":[
+      {
+         "type":"rich_text",
+         "block_id":"g=ha",
+         "elements":[
+            {
+               "type":"rich_text_section",
+               "elements":[
+                  {
+                     "type":"text",
+                     "text":"uyi"
+                  }
+               ]
+            }
+         ]
+      }
+   ],
+   "channel":"D01MHS1J93P",
+   "event_ts":"1613111676.000400",
+   "channel_type":"im"
+}
+//command
+{
+   "token":[
+      "uFNOLorF2y5GnX3UyoFI9HY1"
+   ],
+   "team_id":[
+      "T01M2V7706B"
+   ],
+   "team_domain":[
+      "spzhak"
+   ],
+   "channel_id":[
+      "D01MHS1J93P"
+   ],
+   "channel_name":[
+      "directmessage"
+   ],
+   "user_id":[
+      "U01MAV4M1JS"
+   ],
+   "user_name":[
+      "zhadyra.khattar"
+   ],
+   "command":[
+      "/bind_channel"
+   ],
+   "text":[
+      ""
+   ],
+   "api_app_id":[
+      "A01M65HN2QP"
+   ],
+   "is_enterprise_install":[
+      "false"
+   ],
+   "response_url":[
+      "https://hooks.slack.com/commands/T01M2V7706B/1735484726743/HqDADDHk8yEufm8s1FM3uqPa"
+   ],
+   "trigger_id":[
+      "1750258159090.1716993238215.e49414a8e2d777c40d68298707fdd8b1"
+   ]
+}
