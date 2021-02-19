@@ -11,10 +11,11 @@ SIZE_CHOICES = [
 ]
 
 Purchase_status_choices = [
-    ('inProgress', 'In progress'),
-    ('completed', 'Completed'),
-    ('return', 'Applied for return'),
-    ('returnCompleted', 'Returned'),
+    ('In Progress', 'In progress'),
+    ('Complete', 'Complete'),
+    ('For Return', 'For Return'),
+    ('Returned', 'Returned'),
+    ('In Cart', 'In Cart'),
 ]
 
 
@@ -42,8 +43,15 @@ class Purchases(models.Model):
     chosen_size = models.CharField(max_length=255, null=True)
     quantity = models.IntegerField(default=1)
 
+    #timestamp
+
     purchase_status = models.CharField(
         max_length=16,
         choices=Purchase_status_choices,
         default='In progress',
     )
+#'In Cart'
+#'Complete'
+#'In Progress'
+#'Issued for Return'
+#'Returned'
