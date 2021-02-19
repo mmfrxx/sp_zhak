@@ -4,7 +4,6 @@ from django.contrib import messages
 
 def supervisor_required(function):
     def _function(request,*args, **kwargs):
-        print(request.user)
         if request.user.is_anonymous or not request.user.is_supervisor:
             if request.user.is_anonymous:
                 return redirect('login')

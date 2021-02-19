@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
 from django_email_verification import urls as mail_urls
@@ -24,7 +25,8 @@ urlpatterns = [
     path('api/auth/', include('authentication.urls')),
     path('email/', include(mail_urls)),
     path('op/', include('ourplatform.urls')),
-    path('marketplace/', include('marketplace.urls'))
+    path('marketplace/', include('marketplace.urls')),
+    url(r'^slack/', include('slackevents_sp.urls')),
 ]
 if settings.DEBUG:
   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
