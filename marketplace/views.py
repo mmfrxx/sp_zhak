@@ -233,6 +233,6 @@ class UpdateQuanityOfProductsInCart(GenericAPIView):
 class ViewAllPurchasesAdmin(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAdminOrMarketPlaceAdmin, IsActive]
-    queryset = Product.objects.all()
-    model = Product
-    serializer_class = ProductSerializer
+    queryset = Purchases.objects.all()
+    model = Purchases
+    serializer_class = PurchaseSerializer
