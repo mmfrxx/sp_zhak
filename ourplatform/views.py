@@ -3,15 +3,19 @@ from authentication.models import User
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
 from .serializers import ProjectSerializer, \
     GitHubEventSerializer, TelegramEventSerializer, SlackEventSerializer
-from .models import Project,\
+from .models import Project, \
     ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication\
+from rest_framework_simplejwt.authentication \
     import JWTAuthentication
 from rest_framework.response import Response
 from authentication.serializers import UserSerializer
 from .utils import serialize_events
+from datetime import date, timedelta
 from rest_framework import viewsets
+
+from .factory2 import slackFactory, gitFactory, tgFactory
+from django.utils import timezone
 
 # Create your views here.
 
@@ -62,7 +66,8 @@ class Add_team_lead(APIView):
                         project.save()
                         ProjectAndUser.objects.create(user=team_lead, project=project)
                         return Response("Success", HTTP_200_OK)
-                return Response("Team lead for this project already exists or project does not exist.", HTTP_400_BAD_REQUEST)
+                return Response("Team lead for this project already exists or project does not exist.",
+                                HTTP_400_BAD_REQUEST)
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
         return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
 
@@ -169,18 +174,20 @@ class GetUsersOfProjectView(APIView):
             return Response(users, HTTP_200_OK)
         return Response('Project does not exist', HTTP_400_BAD_REQUEST)
 
-class  ReducePoints(APIView):
+
+class ReducePoints(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [ IsAuthenticated,]
+    permission_classes = [IsAuthenticated, ]
 
     def post(self, request):
-        user = request.user 
+        user = request.user
         username = request.data.get('username')
         points = request.data.get('points')
         project_pk = request.data.get('pk')
         if project_pk:
             project = Project.objects.get(pk=project_pk)
-            if (user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
+            if (
+                    user.is_manager or user.is_organizationOwner or user.is_admin or user.id == project.team_lead.id) and user.is_active:
                 student = User.objects.filter(username=username).first()
                 if student:
                     student.account_bonus -= min(student.account_bonus, points)
@@ -249,7 +256,7 @@ class GetUserEvents(APIView):
             events = Event.objects.filter(user=requested_user).order_by('-timestamp').select_subclasses()
             if number_of_events:
                 events = Event.objects.filter(user=requested_user).order_by('-timestamp').select_subclasses()[
-                             :int(number_of_events)]
+                         :int(number_of_events)]
             return serialize_events(events)
         return Response('You are not allowed to do this', HTTP_400_BAD_REQUEST)
 
@@ -269,8 +276,8 @@ class PostUserInfo(APIView):
         if username and not username.isalnum():
             return (True,
                     'The username should contain only alphanumeric characters')
-        if (first_name and not first_name.isalpha())\
-           or (last_name and not last_name.isalpha()):
+        if (first_name and not first_name.isalpha()) \
+                or (last_name and not last_name.isalpha()):
             return (True,
                     'The first or last name should contain only alphabetic characters')
         if username and User.objects.filter(username=username).exists():
@@ -298,3 +305,82 @@ class PostUserInfo(APIView):
                 return Response(check[1], HTTP_400_BAD_REQUEST)
             return Response('Permission denied', HTTP_400_BAD_REQUEST)
         return Response('User not active', HTTP_400_BAD_REQUEST)
+
+
+
+# time frame: 1 week, 2 weeks, 1 month, 3 month, 6 months, 12 months, all time
+class GetStatistics(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserSerializer
+    project = -1
+
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        project = Project.objects.filter(pk=pk).first()
+        time_frame = request.data.get("time_frame")
+
+        if project:
+            self.project = project
+            number_of_days = 7  # how many units in x axis
+            divisions = 7
+            print(time_frame)
+            if time_frame != '1 week':
+                divisions = 14
+                if  time_frame == '2 weeks':
+                    number_of_days = 14
+                elif time_frame == '1 month':
+                    number_of_days = 30
+                elif time_frame == '3 months':
+                    number_of_days = 90
+                elif time_frame == '6 months':
+                    number_of_days = 180
+                elif time_frame == '12 months':
+                    number_of_days = 365
+            project_users = ProjectAndUser.objects.all().filter(project=project)
+            data = {}
+
+            for item in project_users:
+                user_events = self.getData(item.user, number_of_days, divisions)
+                data[item.user.username] = user_events
+            return Response(data, HTTP_200_OK)
+        return Response('No project found', HTTP_400_BAD_REQUEST)
+
+
+    def getData(self, user, number_of_days, number_of_divisions):
+        increments = number_of_days / number_of_divisions  # 365/14
+        start_day = date.today() - timedelta(days=number_of_days)  # now - 365 days
+        data = {"Slack": {}, "Telegram": {}, "Git": {}}
+        print(self.project)
+        while (start_day <= (date.today())):
+            end_day = start_day + timedelta(days=increments)  # this day last year + 26 days
+            # make query Event.objects.all.get_subclasses(from start day; to end day, user= user, project = project)
+            # and then save it in dict
+
+            slack_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                                timestamp__lt=end_day).select_subclasses(SlackEvent)
+            data["Slack"][str(start_day) + " - " + str(end_day)] = SlackEventSerializer(slack_events, many=True).data
+
+            github_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                                 timestamp__lt=end_day).select_subclasses(
+                GithubEvent)
+            data["Git"][str(start_day) + " - " + str(end_day)] = GitHubEventSerializer(github_events, many=True).data
+
+            tg_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                             timestamp__lt=end_day).select_subclasses(
+                TelegramEvent)
+            data["Telegram"][str(start_day) + " - " + str(end_day)] = GitHubEventSerializer(tg_events, many=True).data
+
+            # start_day = end_day + timedelta(days=1)
+            start_day = end_day
+
+        return data
+
+
+# class makeEvents(APIView):
+#     def post(self, request, *args, **kwargs):
+#         for i in range(10):
+#             gitFactory.create()
+#             slackFactory.create()
+#             tgFactory.create()
+#         return Response(HTTP_200_OK)

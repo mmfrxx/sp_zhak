@@ -1,7 +1,7 @@
 from django.db import models
 from authentication.models import User
 from model_utils.managers import InheritanceManager
-
+from datetime import date
 
 # Create your models here.
 class Project(models.Model):
@@ -23,8 +23,7 @@ class Event(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_related",
                                 related_query_name="%(app_label)s_%(class)ss", )
     user = models.ForeignKey(User, on_delete=models.CASCADE )
-    timestamp = models.DateTimeField(auto_now_add=True)
-
+    timestamp = models.DateTimeField(default=date.today)
     objects = InheritanceManager()
 
 
