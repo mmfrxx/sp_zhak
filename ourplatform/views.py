@@ -14,7 +14,7 @@ from .utils import serialize_events
 from datetime import date, timedelta
 from rest_framework import viewsets
 
-from .factory2 import slackFactory, gitFactory, tgFactory
+#from .factory2 import slackFactory, gitFactory, tgFactory
 from django.utils import timezone
 
 # Create your views here.
@@ -359,17 +359,17 @@ class GetStatistics(APIView):
 
             slack_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                 timestamp__lt=end_day).select_subclasses(SlackEvent)
-            data["Slack"][str(start_day) + " - " + str(end_day)] = SlackEventSerializer(slack_events, many=True).data
+            data["Slack"][str(start_day) + " - " + str(end_day)] = len(SlackEventSerializer(slack_events, many=True).data)
 
             github_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                  timestamp__lt=end_day).select_subclasses(
                 GithubEvent)
-            data["Git"][str(start_day) + " - " + str(end_day)] = GitHubEventSerializer(github_events, many=True).data
+            data["Git"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(github_events, many=True).data)
 
             tg_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                              timestamp__lt=end_day).select_subclasses(
                 TelegramEvent)
-            data["Telegram"][str(start_day) + " - " + str(end_day)] = GitHubEventSerializer(tg_events, many=True).data
+            data["Telegram"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(tg_events, many=True).data)
 
             # start_day = end_day + timedelta(days=1)
             start_day = end_day
@@ -377,10 +377,4 @@ class GetStatistics(APIView):
         return data
 
 
-# class makeEvents(APIView):
-#     def post(self, request, *args, **kwargs):
-#         for i in range(10):
-#             gitFactory.create()
-#             slackFactory.create()
-#             tgFactory.create()
-#         return Response(HTTP_200_OK)
+
