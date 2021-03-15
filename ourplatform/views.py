@@ -316,35 +316,38 @@ class GetStatistics(APIView):
     project = -1
 
     def get(self, request, *args, **kwargs):
+        user = request.user
         pk = kwargs.get("pk")
         project = Project.objects.filter(pk=pk).first()
         time_frame = request.data.get("time_frame")
+        if ProjectAndUser.objects.filter(user=user,
+                                         project=project).exists() or user.is_manager or user.is_organizationOwner or user.is_admin:
+            if project:
+                self.project = project
+                number_of_days = 7  # how many units in x axis
+                divisions = 7
+                print(time_frame)
+                if time_frame != '1 week':
+                    divisions = 14
+                    if  time_frame == '2 weeks':
+                        number_of_days = 14
+                    elif time_frame == '1 month':
+                        number_of_days = 30
+                    elif time_frame == '3 months':
+                        number_of_days = 90
+                    elif time_frame == '6 months':
+                        number_of_days = 180
+                    elif time_frame == '12 months':
+                        number_of_days = 365
+                project_users = ProjectAndUser.objects.all().filter(project=project)
+                data = {}
 
-        if project:
-            self.project = project
-            number_of_days = 7  # how many units in x axis
-            divisions = 7
-            print(time_frame)
-            if time_frame != '1 week':
-                divisions = 14
-                if  time_frame == '2 weeks':
-                    number_of_days = 14
-                elif time_frame == '1 month':
-                    number_of_days = 30
-                elif time_frame == '3 months':
-                    number_of_days = 90
-                elif time_frame == '6 months':
-                    number_of_days = 180
-                elif time_frame == '12 months':
-                    number_of_days = 365
-            project_users = ProjectAndUser.objects.all().filter(project=project)
-            data = {}
-
-            for item in project_users:
-                user_events = self.getData(item.user, number_of_days, divisions)
-                data[item.user.username] = user_events
-            return Response(data, HTTP_200_OK)
-        return Response('No project found', HTTP_400_BAD_REQUEST)
+                for item in project_users:
+                    user_events = self.getData(item.user, number_of_days, divisions)
+                    data[item.user.username] = user_events
+                return Response(data, HTTP_200_OK)
+            return Response('No project found', HTTP_400_BAD_REQUEST)
+        return Response('Permission denied', HTTP_400_BAD_REQUEST)
 
 
     def getData(self, user, number_of_days, number_of_divisions):
