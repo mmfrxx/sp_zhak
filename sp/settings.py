@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
-                 'c4059e8f09fb.ngrok.io']
+                 '732273afc5fb.ngrok.io']
 
 CORS_ORIGIN_WHITELIST = [
     "https://1e67b76bd328.ngrok.io",
@@ -36,7 +36,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://3fb4f88b07f2.ngrok.io",
-    "http://c4059e8f09fb.ngrok.io"
+    "http://732273afc5fb.ngrok.io"
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
