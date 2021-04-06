@@ -43,7 +43,11 @@ class Events(APIView):
                     profile_account = SlackProfile.objects.filter(profile_id=user_id)
                     if channel_proj.first() is None or profile_account.first() is None:
                         return Response(status=status.HTTP_200_OK)
-                    SlackEvent.objects.create(project=channel_proj.first().project,
+                    user = profile_account.first().user
+                    project = channel_proj.first().project
+                    user.account_bonus += project.slack_bonus
+                    user.save()
+                SlackEvent.objects.create(project=channel_proj.first().project,
                                               user=profile_account.first().user,
                                               message=event_message.get('text'),
                                               channel=channel_proj.first().channel_name)
