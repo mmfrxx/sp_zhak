@@ -27,6 +27,7 @@ urlpatterns = [
     path('op/', include('ourplatform.urls')),
     path('marketplace/', include('marketplace.urls')),
     url(r'^slack/', include('slackevents_sp.urls')),
+    url(r'^tg/', include('telegram_sp.urls')),
 ]
 if settings.DEBUG:
   urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
