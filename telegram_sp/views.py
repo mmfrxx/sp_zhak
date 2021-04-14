@@ -24,26 +24,27 @@ class Events(View):
     def post(self, request, *args, **kwargs):
         t_data = json.loads(request.body)
         t_message = t_data['message']
-        text = t_message['text']
-        t_chat = t_message['chat']
-        group_type = t_chat['type']
-        if 'entities' in t_message:
-            if group_type == "private":
-                if BIND_GROUP in text:
-                    msg = "Please use 'bind group' command only in group chats."
-                    chat_id = t_chat['id']
-                    self.send_message(msg, chat_id)
-                elif BIND_PROFILE in text:
-                    self.bind_profile(t_data, t_chat['id'])
-            elif group_type == "group":
-                if BIND_PROFILE in text:
-                    msg = "Please use 'bind profile' command only in a private chat."
-                    chat_id = t_chat['id']
-                    self.send_message(msg, chat_id)
-                elif BIND_GROUP in text:
-                    self.bind_group(t_data, t_chat['id'])
-        else:
-            self.process_telegram_events(t_data)
+        if 'text' in t_message:
+            text = t_message['text']
+            t_chat = t_message['chat']
+            group_type = t_chat['type']
+            if 'entities' in t_message:
+                if group_type == "private":
+                    if BIND_GROUP in text:
+                        msg = "Please use 'bind group' command only in group chats."
+                        chat_id = t_chat['id']
+                        self.send_message(msg, chat_id)
+                    elif BIND_PROFILE in text:
+                        self.bind_profile(t_data, t_chat['id'])
+                elif group_type == "group":
+                    if BIND_PROFILE in text:
+                        msg = "Please use 'bind profile' command only in a private chat."
+                        chat_id = t_chat['id']
+                        self.send_message(msg, chat_id)
+                    elif BIND_GROUP in text:
+                        self.bind_group(t_data, t_chat['id'])
+            else:
+                self.process_telegram_events(t_data)
         return JsonResponse({"ok": "POST request processed"})
 
     @staticmethod
@@ -70,6 +71,10 @@ class Events(View):
                 profile_account = TelegramProfile.objects.filter(profile_id=user_id)
                 if group_proj.first() is None or profile_account.first() is None:
                     return Response(status=status.HTTP_200_OK)
+                user = profile_account.first().user
+                project = group_proj.first().project
+                user.account_bonus += project.telegram_bonus
+                user.save()
                 TelegramEvent.objects.create(project=group_proj.first().project,
                                              user=profile_account.first().user,
                                              message=text,
