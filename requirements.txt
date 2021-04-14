@@ -12,3 +12,6 @@ django-select-multiple-field~=0.4.2
 slackclient
 slackeventsapi
 slack~=0.0.2
+requests
+django-multiselectfield
+slack_sdk

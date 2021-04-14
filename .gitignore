@@ -13,3 +13,5 @@ activate
 ourplatform/migrations/
 authentication/migrations/
 ourplatform/factory2.py
+**/migrations/
+

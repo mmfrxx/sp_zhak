@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
-                 '0d51f4561f98.ngrok.io']
+                 'c4059e8f09fb.ngrok.io',
+                 'fa4fc41e6321.ngrok.io']
 
 CORS_ORIGIN_WHITELIST = [
     "https://1e67b76bd328.ngrok.io",
@@ -36,7 +37,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
     "http://3fb4f88b07f2.ngrok.io",
-    "http://0d51f4561f98.ngrok.io"
+    "http://c4059e8f09fb.ngrok.io"
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -59,7 +60,9 @@ INSTALLED_APPS = [
     'marketplace',
     'django_filters',
     'integrations',
-    'slackevents_sp'
+    'slackevents_sp',
+    'telegram_sp',
+    'github_events'
 ]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")

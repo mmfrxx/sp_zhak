@@ -147,7 +147,7 @@ class AddToCart(GenericAPIView):
                 if product_pk:
                     product = Product.objects.get(pk=product_pk)
                     if Purchases.objects.filter(product = product).exists():
-                        purchase = Purchases.objects.filter(product = product,purchase_status='In Cart', user=user, size = size ).first()
+                        purchase = Purchases.objects.filter(product = product,purchase_status='In Cart', user=user, chosen_size = size ).first()
                         purchase.quantity += quantity
                         purchase.save()
                         return Response(data=PurchaseSerializer(purchase).data, status=HTTP_200_OK)
