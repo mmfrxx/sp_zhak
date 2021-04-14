@@ -143,11 +143,12 @@ class AddToCart(GenericAPIView):
         requested_user = User.objects.filter(pk=pk).first()
         if requested_user:
             if user == requested_user or user.is_admin or user.is_marketplace_admin:
-
+                #test this
                 if product_pk:
                     product = Product.objects.get(pk=product_pk)
-                    if Purchases.objects.filter(product = product).exists():
-                        purchase = Purchases.objects.filter(product = product,purchase_status='In Cart', user=user, chosen_size = size ).first()
+                    purchase_list = Purchases.objects.filter(product = product,purchase_status='In Cart', user=user, chosen_size = size ).filter()
+                    if purchase_list:
+                        purchase = purchase_list.first()
                         purchase.quantity += quantity
                         purchase.save()
                         return Response(data=PurchaseSerializer(purchase).data, status=HTTP_200_OK)
