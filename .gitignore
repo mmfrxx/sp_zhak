@@ -10,8 +10,8 @@ secretsnotlib.py
 env
 .env
 activate
-ourplatform/migrations/
-authentication/migrations/
-ourplatform/factory2.py
-**/migrations/
-ngrok
+#ourplatform/migrations/
+#authentication/migrations/
+#ourplatform/factory2.py
+#**/migrations/
+
