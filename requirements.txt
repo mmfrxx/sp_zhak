@@ -18,3 +18,4 @@ slack_sdk
 requests
 whitenoise
 dj_database_url
+python-decouple
