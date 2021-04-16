@@ -16,14 +16,14 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
-from django_email_verification import urls as mail_urls
+# from django_email_verification import urls as mail_urls
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include('authentication.urls')),
-    path('email/', include(mail_urls)),
+    # path('email/', include(mail_urls)),
     path('op/', include('ourplatform.urls')),
     path('marketplace/', include('marketplace.urls')),
     url(r'^slack/', include('slackevents_sp.urls')),

@@ -35,10 +35,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
+# SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=False, cast=bool)
+# DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
@@ -74,7 +76,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'authentication',
     'rest_framework_simplejwt.token_blacklist',
-    'django_email_verification',
+    # 'django_email_verification',
     'ourplatform',
     'marketplace',
     'django_filters',
@@ -137,22 +139,22 @@ WSGI_APPLICATION = 'sp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DATABASE_URL')
-    )
-}
-
-#     {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'sp',
-#         'USER': 'postgres',
-#         'PASSWORD': 'postgres',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#     }
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('DATABASE_URL')
+#     )
 # }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'sp',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -192,15 +194,19 @@ STATIC_URL = '/static/'
 
 # jwt
 
-JWT_SECRET_KEY = config('JWT_SECRET_KEY')
+# JWT_SECRET_KEY = config('JWT_SECRET_KEY')
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 
 # email settings
 EMAIL_ACTIVE_FIELD = 'is_active'
 EMAIL_SERVER = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_ADDRESS = config('EMAIL')
-EMAIL_FROM_ADDRESS = config('EMAIL')
-EMAIL_PASSWORD = config('EMAIL_PASSWORD')
+# EMAIL_ADDRESS = config('EMAIL')
+EMAIL_ADDRESS = os.environ.get('EMAIL')
+# EMAIL_FROM_ADDRESS = config('EMAIL')
+EMAIL_FROM_ADDRESS = os.environ.get('EMAIL')
+# EMAIL_PASSWORD = config('EMAIL_PASSWORD')
+EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = 'mail_body.html'
 EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
@@ -208,12 +214,19 @@ EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/'
 
 # SLACK API Configurations
 # ----------------------------------------------
-SLACK_CLIENT_ID = config('CLIENT_ID')
-SLACK_CLIENT_SECRET = config('CLIENT_SECRET')
-SLACK_VERIFICATION_TOKEN = config('VERIFICATION_TOKEN')
-SLACK_BOT_USER_TOKEN = config('SLACK_BOT_USER_TOKEN')
-GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID')
-GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET')
-TG_BOT_TOKEN = config('TG_BOT_TOKEN')
+# SLACK_CLIENT_ID = config('CLIENT_ID')
+# SLACK_CLIENT_SECRET = config('CLIENT_SECRET')
+# SLACK_VERIFICATION_TOKEN = config('VERIFICATION_TOKEN')
+# SLACK_BOT_USER_TOKEN = config('SLACK_BOT_USER_TOKEN')
+# GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID')
+# GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET')
+# TG_BOT_TOKEN = config('TG_BOT_TOKEN')
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
+SLACK_CLIENT_ID = os.environ.get('CLIENT_ID')
+SLACK_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+SLACK_VERIFICATION_TOKEN = os.environ.get('VERIFICATION_TOKEN')
+SLACK_BOT_USER_TOKEN = os.environ.get('SLACK_BOT_USER_TOKEN')
+GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID')
+GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET')
+TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN')

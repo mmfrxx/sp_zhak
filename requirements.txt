@@ -3,7 +3,6 @@ djangorestframework~=3.12.1
 djangorestframework_simplejwt
 psycopg2-binary
 django-cors-headers
-django-email-verification
 django-model-utils~=4.0.0
 
 django-filter~=2.4.0

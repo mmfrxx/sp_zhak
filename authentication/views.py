@@ -5,7 +5,7 @@ from rest_framework.status import *
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
-from django_email_verification import sendConfirm
+# from django_email_verification import sendConfirm
 from .models import User
 
 
@@ -54,8 +54,10 @@ class RegisterView(GenericAPIView):
         try:
             if serializer.is_valid(raise_exception=True):
                 user = serializer.save()
+                user.is_active = True
                 user_data = serializer.data
-                sendConfirm(user)
+                user.save()
+                # sendConfirm(user)
                 return Response(user_data, status=HTTP_201_CREATED)
         except Exception:
             return Response("Please check your credentials", status=HTTP_400_BAD_REQUEST)
