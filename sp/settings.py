@@ -58,7 +58,7 @@ CORS_ORIGIN_WHITELIST = [
     "http://3fb4f88b07f2.ngrok.io",
     "http://732273afc5fb.ngrok.io",
     "http://c4059e8f09fb.ngrok.io",
-    "https://demo-sp.herokuapp.com/"
+    "https://demo-sp.herokuapp.com"
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
