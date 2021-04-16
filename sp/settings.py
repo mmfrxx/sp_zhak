@@ -221,7 +221,7 @@ SLACK_BOT_USER_TOKEN = config('SLACK_BOT_USER_TOKEN')
 GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID')
 GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET')
 TG_BOT_TOKEN = config('TG_BOT_TOKEN')
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # SLACK_CLIENT_ID = os.environ.get('CLIENT_ID')
 # SLACK_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
