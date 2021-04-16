@@ -13,6 +13,21 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 import datetime
 
+import dj_database_url
+from decouple import config
+
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_URL = '/static/'
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_ROOT, 'static'),
+)
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,16 +35,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ht55&&4=x60)jvz2_+(e#t$dqx4vsm+jh@5p&=2_5^k9u@4!_h'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  'c4059e8f09fb.ngrok.io',
                  'fa4fc41e6321.ngrok.io',
-                 'b5b192343036.ngrok.io']
+                 '732273afc5fb.ngrok.io',
+                 'demo-sp.herokuapp.com/']
 
 CORS_ORIGIN_WHITELIST = [
     "https://1e67b76bd328.ngrok.io",
@@ -39,7 +55,8 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:3000",
     "http://3fb4f88b07f2.ngrok.io",
     "http://732273afc5fb.ngrok.io",
-    "http://c4059e8f09fb.ngrok.io"
+    "http://c4059e8f09fb.ngrok.io",
+    "https://demo-sp.herokuapp.com/"
 ]
 
 AUTH_USER_MODEL = 'authentication.User'
@@ -61,7 +78,6 @@ INSTALLED_APPS = [
     'ourplatform',
     'marketplace',
     'django_filters',
-    'integrations',
     'slackevents_sp',
     'telegram_sp',
     'github_events'
@@ -88,6 +104,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+  'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -121,15 +138,21 @@ WSGI_APPLICATION = 'sp.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sp',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL')
+    )
 }
+
+#     {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'sp',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -168,17 +191,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # jwt
-import secretsnotlib
 
-JWT_SECRET_KEY = secretsnotlib.JWT_SECRET_KEY
+JWT_SECRET_KEY = config('JWT_SECRET_KEY')
 
 # email settings
 EMAIL_ACTIVE_FIELD = 'is_active'
 EMAIL_SERVER = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_ADDRESS = secretsnotlib.EMAIL
-EMAIL_FROM_ADDRESS = secretsnotlib.EMAIL
-EMAIL_PASSWORD = secretsnotlib.EMAIL_PASSWORD
+EMAIL_ADDRESS = config('EMAIL')
+EMAIL_FROM_ADDRESS = config('EMAIL')
+EMAIL_PASSWORD = config('EMAIL_PASSWORD')
 EMAIL_MAIL_SUBJECT = 'Confirm your email'
 EMAIL_MAIL_HTML = 'mail_body.html'
 EMAIL_PAGE_TEMPLATE = 'confirm_template.html'
@@ -186,7 +208,12 @@ EMAIL_PAGE_DOMAIN = 'http://127.0.0.1:8000/'
 
 # SLACK API Configurations
 # ----------------------------------------------
-SLACK_CLIENT_ID = os.environ.get('CLIENT_ID')
-SLACK_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-SLACK_VERIFICATION_TOKEN = os.environ.get('VERIFICATION_TOKEN')
-SLACK_BOT_USER_TOKEN = os.environ.get('SLACK_BOT_USER_TOKEN')
+SLACK_CLIENT_ID = config('CLIENT_ID')
+SLACK_CLIENT_SECRET = config('CLIENT_SECRET')
+SLACK_VERIFICATION_TOKEN = config('VERIFICATION_TOKEN')
+SLACK_BOT_USER_TOKEN = config('SLACK_BOT_USER_TOKEN')
+GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID')
+GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET')
+TG_BOT_TOKEN = config('TG_BOT_TOKEN')
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+

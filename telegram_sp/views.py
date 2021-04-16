@@ -12,10 +12,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from ourplatform.models import Project, ProjectAndUser, TelegramEvent
+from sp import settings
 from telegram_sp.models import TelegramProfileCode, TelegramProfile, GroupCode, GroupProject
 
 TG_URL = "https://api.telegram.org/bot"
-TG_BOT_TOKEN = os.getenv("TG_BOT_TOKEN", "error_token")
+TG_BOT_TOKEN = getattr(settings, 'TG_BOT_TOKEN', None)
 BIND_GROUP = "/bind_group"
 BIND_PROFILE = "/bind_profile"
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework.views import APIView
 from authentication.models import User
@@ -5,7 +6,6 @@ from rest_framework.status import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication \
     import JWTAuthentication
-from secretsnotlib import GITHUB_CLIENT_SECRET, GITHUB_CLIENT_ID, GITHUB_DEVELOPER_KEY
 from rest_framework.response import Response
 import requests
 import json
@@ -13,6 +13,9 @@ from .models import *
 from ourplatform.models import GithubEvent, Project
 from ourplatform.serializers import GitHubEventSerializer
 import os
+
+GITHUB_CLIENT_SECRET = getattr(settings, 'GITHUB_CLIENT_SECRET', None)
+GITHUB_CLIENT_ID = getattr(settings, 'GITHUB_CLIENT_ID', None)
 
 
 class GithubPage(APIView):
