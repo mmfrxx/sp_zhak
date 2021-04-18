@@ -21,9 +21,9 @@ class GithubPage(APIView):
 
 
 # Create your views here.
+# bind github account
 
 # recieve authentication token and exchange to oauth token
-# Frontend button directs to https://github.com/login/oauth/authorize?client_id=01bd74491b2142e0a049
 # and it redirects to frontend and from frontend I get a request with code in payload
 class GithubAuth(APIView):
     authentication_classes = [JWTAuthentication]
@@ -63,8 +63,9 @@ class GithubAuth(APIView):
         login = response.json()['login']
         return login
 
+
 # bind to a repo
-#repo url $username/repo_name
+# repo url $username/repo_name
 class CreateWebHook(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
@@ -87,12 +88,13 @@ class CreateWebHook(APIView):
                      }
                 }
         data = json.dumps(data)
-        response = requests.post('https://api.github.com/repos/'+repo+'/hooks', headers=headers, data=data)
-        #save project and project repository name
+        response = requests.post('https://api.github.com/repos/' + repo + '/hooks', headers=headers, data=data)
+        # save project and project repository name
         project_pk = kwargs.get("pk")
         project = Project.objects.filter(pk=project_pk).first()
         GithubAndProject(project=project, github_repo_name=repo)
         return Response(response.json(), HTTP_200_OK)
+
     def get_repo_id(self, token):
         headers = {
             'Accept': 'application/vnd.github.v3+json',
@@ -103,18 +105,54 @@ class CreateWebHook(APIView):
 
 
 # get repo event
-#+bonuses
+# +bonuses
 class PostEvent(APIView):
     def post(self, request, *args, **kwargs):
         event = dict(request.data)
+        type = request.headers['X-GitHub-Event']
         github_repo = event['repository']['id']
-        github = GithubAndProject.objects.filter(github_repo_id = github_repo).first()
-        project = github.project
-        owner = event['repository']['owner']['login']
-        github_account = GithubAndUser.objects.filter(login = owner)
+        print(type)
+        github = GithubAndProject.objects.filter(github_repo_id=github_repo).first()
+        if github:
+            project = github.project
+            if type == 'push':
+                self.process_push_event(event, type, project)
+            elif type == 'pull_request':
+                self.process_pr_event(event, type, project)
+            return Response(HTTP_200_OK)
+        return Response("could not find any matching repository for the project", HTTP_400_BAD_REQUEST)
+
+    # there can be multiple commits in one push: one commit -> one github_event
+    def process_push_event(self, event, type, project ):
+        github_repo_name = event['repository']['name']
+        commit_owner = event['pusher']['name']
+        github_account = GithubAndUser.objects.filter(login=commit_owner).first()
         user = github_account.user
-        #type
-        #repo
-        #metaData
-        GithubEvent.objects.create(project=project, user=user, type=type)
-        return Response(HTTP_200_OK)
+        for i in range(len(event['commits'])):
+            metadata = {
+                "modified_data": event['commits'][i]['modified'],
+                "message": event['commits'][i]['message'],
+                "link_to_commit": event['commits'][i]['url'],
+            }
+            GithubEvent.objects.create(project=project, user=user, type=type, repo=github_repo_name, metaData=metadata)
+        self.assign_bonuses(user, project)
+
+    def assign_bonuses(self, user, project):
+        user.account_bonus = user.account_bonus+project.git_bonus
+        user.save()
+
+    #pull-requests
+    def process_pr_event(self, event, type, project):
+        github_repo_name = event['repository']['name']
+        pr_owner = event['pull_request']['user']['login']
+        github_account = GithubAndUser.objects.filter(login=pr_owner).first()
+        user = github_account.user
+        metadata = {
+            "pr_action": event['action'],
+            "message": event['pull_request']['body'],
+            "link_to_pr": event['pull_request']['url'],
+        }
+        GithubEvent.objects.create(project=project, user=user, type=type, repo=github_repo_name, metaData=metadata)
+        self.assign_bonuses(user, project)
+
+

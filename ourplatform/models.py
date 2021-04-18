@@ -30,7 +30,7 @@ class Event(models.Model):
 class GithubEvent(Event):
     type = models.CharField(null=True, max_length=255)
     repo = models.CharField(null=True, max_length=255)
-    metaData = models.CharField(null=True, max_length=255)
+    metaData = models.TextField(null=True)
 
 
 class SlackEvent(Event):
