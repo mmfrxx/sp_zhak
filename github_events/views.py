@@ -16,6 +16,7 @@ import os
 
 GITHUB_CLIENT_SECRET = getattr(settings, 'GITHUB_CLIENT_SECRET', None)
 GITHUB_CLIENT_ID = getattr(settings, 'GITHUB_CLIENT_ID', None)
+GITHUB_DEVELOPER_KEY = getattr(settings, 'GITHUB_DEVELOPER_KEY', None)
 
 
 class GithubPage(APIView):

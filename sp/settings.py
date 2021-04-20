@@ -221,6 +221,7 @@ SLACK_BOT_USER_TOKEN = config('SLACK_BOT_USER_TOKEN')
 GITHUB_CLIENT_ID = config('GITHUB_CLIENT_ID')
 GITHUB_CLIENT_SECRET = config('GITHUB_CLIENT_SECRET')
 TG_BOT_TOKEN = config('TG_BOT_TOKEN')
+GITHUB_DEVELOPER_KEY = config('GITHUB_DEVELOPER_KEY')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
@@ -451,4 +452,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # SLACK_BOT_USER_TOKEN = os.environ.get('SLACK_BOT_USER_TOKEN')
 # GITHUB_CLIENT_ID = os.environ.get('GITHUB_CLIENT_ID')
 # GITHUB_CLIENT_SECRET = os.environ.get('GITHUB_CLIENT_SECRET')
+# GITHUB_DEVELOPER_KEY = os.environ.get('GITHUB_DEVELOPER_KEY')
 # TG_BOT_TOKEN = os.environ.get('TG_BOT_TOKEN')
