@@ -94,7 +94,7 @@ class CreateWebHook(APIView):
         data = {
             "config":
             {
-                "url": "http://b5b192343036.ngrok.io/github/events",
+                "url": "https://demo-sp.herokuapp.com/github/events",
                 "content_type": "json"
 
             },
