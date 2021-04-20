@@ -29,7 +29,7 @@ ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  'c4059e8f09fb.ngrok.io',
                  'fa4fc41e6321.ngrok.io',
-                 'f9e8737db856.ngrok.io']
+                 'b5b192343036.ngrok.io']
 
 CORS_ORIGIN_WHITELIST = [
     "https://1e67b76bd328.ngrok.io",
