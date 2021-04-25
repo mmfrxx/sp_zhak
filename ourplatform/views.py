@@ -72,6 +72,24 @@ class Add_team_lead(APIView):
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
         return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
 
+class Delete_team_lead(APIView):
+    def delete(self, request):
+        user = request.user
+        if (user.is_manager or user.is_organizationOwner or user.is_admin) and user.is_active:
+            project_pk = request.data.get('pk')
+            if project_pk:
+                project = Project.objects.filter(pk=project_pk).first()
+                if project and project.team_lead is not None:
+                    project.team_lead = None
+                    project.save()
+                    return Response("Success", HTTP_200_OK)
+                return Response("Team lead for this project is not set or project does not exist.",
+                                HTTP_400_BAD_REQUEST)
+            return Response("Project is required.", HTTP_400_BAD_REQUEST)
+        return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
+
+        pass
+
 
 # request: user, pk, username
 class Add_team_member(APIView):
