@@ -64,7 +64,8 @@ class Add_team_lead(APIView):
                         team_lead = User.objects.get(username=request.data.get('username'))
                         project.team_lead = team_lead
                         project.save()
-                        ProjectAndUser.objects.create(user=team_lead, project=project)
+                        if not ProjectAndUser.objects.filter(user=team_lead, project=project).exists():
+                            ProjectAndUser.objects.create(user=team_lead, project=project)
                         return Response("Success", HTTP_200_OK)
                 return Response("Team lead for this project already exists or project does not exist.",
                                 HTTP_400_BAD_REQUEST)
