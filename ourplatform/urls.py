@@ -16,6 +16,6 @@ urlpatterns = [
     re_path(r'^get_user_activities/(?P<pk>\w+)+', GetUserEvents.as_view(), name='get_user_events'),
     path('change-user-information/<int:pk>', PostUserInfo.as_view(), name='get_project_events'),
     path('delete-project/<int:pk>', DeleteProjectView.as_view(), name='delete-project' ),
-    path('get-statistics/<int:pk>', GetStatistics.as_view(), name='getStatistics'),
+    re_path(r'^get-statistics/(?P<pk>\w+)+', GetStatistics.as_view(), name='getStatistics'),
     # path('factory', makeEvents.as_view(), name='factory'),
 ]
