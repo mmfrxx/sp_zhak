@@ -58,7 +58,7 @@ class Add_team_lead(APIView):
         if (user.is_manager or user.is_organizationOwner or user.is_admin) and user.is_active:
             project_pk = request.data.get('pk')
             if project_pk:
-                project = Project.objects.first(pk=project_pk)
+                project = Project.objects.filter(pk=project_pk).first()
                 if project and project.team_lead == None:
                     if User.objects.filter(username=request.data.get('username')).exists():
                         team_lead = User.objects.get(username=request.data.get('username'))
