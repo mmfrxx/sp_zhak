@@ -131,6 +131,9 @@ class Remove_team_member(APIView):
                     if ProjectAndUser.objects.filter(user__username=user_to_remove.username,
                                                      project_id=project.id).exists():
                         ProjectAndUser.objects.get(user=user_to_remove, project=project).delete()
+                        if user_to_remove == project.team_lead:
+                            project.team_lead = None
+                            project.save()
                         return Response("Success", HTTP_200_OK)
                     return Response("User not in project", HTTP_400_BAD_REQUEST)
                 return Response("User does not exist.", HTTP_400_BAD_REQUEST)
