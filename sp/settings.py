@@ -64,8 +64,10 @@ INSTALLED_APPS = [
     'integrations',
     'slackevents_sp',
     'telegram_sp',
-    'github_events'
+    'github_events',
+    'django_s3_storage'
 ]
+DEFAULT_FILE_STORAGE = "django_s3_storage.storage.S3Storage"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
@@ -190,3 +192,17 @@ SLACK_CLIENT_ID = os.environ.get('CLIENT_ID')
 SLACK_CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 SLACK_VERIFICATION_TOKEN = os.environ.get('VERIFICATION_TOKEN')
 SLACK_BOT_USER_TOKEN = os.environ.get('SLACK_BOT_USER_TOKEN')
+
+
+#AWS STORAGE CONFIG
+# ----------------------------------------------
+AWS_REGION = "ap-south-1"
+AWS_ACCESS_KEY_ID = secretsnotlib.AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY = secretsnotlib.AWS_SECRET_ACCESS_KEY
+AWS_S3_BUCKET_NAME = "seniorp"
+AWS_S3_ADDRESSING_STYLE = "auto"
+AWS_S3_ENDPOINT_URL = ""
+AWS_S3_KEY_PREFIX = ""
+AWS_S3_BUCKET_AUTH = True
+AWS_S3_MAX_AGE_SECONDS = 60 * 60*24
+AWS_S3_PUBLIC_URL = ""

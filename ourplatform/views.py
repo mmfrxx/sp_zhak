@@ -319,7 +319,7 @@ class GetStatistics(APIView):
         user = request.user
         pk = kwargs.get("pk")
         project = Project.objects.filter(pk=pk).first()
-        time_frame = request.data.get("time_frame")
+        time_frame = request.GET.get('time_frame', '1_week')
         if ProjectAndUser.objects.filter(user=user,
                                          project=project).exists() or user.is_manager or user.is_organizationOwner or user.is_admin:
             if project:
@@ -327,17 +327,17 @@ class GetStatistics(APIView):
                 number_of_days = 7  # how many units in x axis
                 divisions = 7
                 print(time_frame)
-                if time_frame != '1 week':
+                if time_frame != '1_week':
                     divisions = 14
-                    if  time_frame == '2 weeks':
+                    if  time_frame == '2_weeks':
                         number_of_days = 14
-                    elif time_frame == '1 month':
+                    elif time_frame == '1_month':
                         number_of_days = 30
-                    elif time_frame == '3 months':
+                    elif time_frame == '3_months':
                         number_of_days = 90
-                    elif time_frame == '6 months':
+                    elif time_frame == '6_months':
                         number_of_days = 180
-                    elif time_frame == '12 months':
+                    elif time_frame == '12_months':
                         number_of_days = 365
                 project_users = ProjectAndUser.objects.all().filter(project=project)
                 data = {}
@@ -354,7 +354,6 @@ class GetStatistics(APIView):
         increments = number_of_days / number_of_divisions  # 365/14
         start_day = date.today() - timedelta(days=number_of_days)  # now - 365 days
         data = {"Slack": {}, "Telegram": {}, "Git": {}}
-        print(self.project)
         while (start_day <= (date.today())):
             end_day = start_day + timedelta(days=increments)  # this day last year + 26 days
             # make query Event.objects.all.get_subclasses(from start day; to end day, user= user, project = project)

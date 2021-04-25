@@ -16,3 +16,4 @@ requests
 django-multiselectfield
 slack_sdk
 requests
+django-s3-storage
