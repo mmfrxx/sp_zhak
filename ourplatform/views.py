@@ -1,21 +1,23 @@
-from rest_framework.views import APIView
-from authentication.models import User
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
-from .serializers import ProjectSerializer, \
-    GitHubEventSerializer, TelegramEventSerializer, SlackEventSerializer
-from .models import Project, \
-    ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
+from datetime import date, timedelta
+
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_200_OK
+from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication \
     import JWTAuthentication
-from rest_framework.response import Response
-from authentication.serializers import UserSerializer
-from .utils import serialize_events
-from datetime import date, timedelta
-from rest_framework import viewsets
 
-#from .factory2 import slackFactory, gitFactory, tgFactory
-from django.utils import timezone
+from authentication.models import User
+from authentication.serializers import UserSerializer
+from .models import Project, \
+    ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
+from .serializers import ProjectSerializer, \
+    GitHubEventSerializer, SlackEventSerializer
+from .utils import serialize_events
+
+
+# from .factory2 import slackFactory, gitFactory, tgFactory
+
 
 # Create your views here.
 
@@ -71,6 +73,7 @@ class Add_team_lead(APIView):
                                 HTTP_400_BAD_REQUEST)
             return Response("Project is required.", HTTP_400_BAD_REQUEST)
         return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
+
 
 class Delete_team_lead(APIView):
     def delete(self, request):
@@ -329,7 +332,6 @@ class PostUserInfo(APIView):
         return Response('User not active', HTTP_400_BAD_REQUEST)
 
 
-
 # time frame: 1 week, 2 weeks, 1 month, 3 month, 6 months, 12 months, all time
 class GetStatistics(APIView):
     authentication_classes = [JWTAuthentication]
@@ -371,7 +373,6 @@ class GetStatistics(APIView):
             return Response('No project found', HTTP_400_BAD_REQUEST)
         return Response('Permission denied', HTTP_400_BAD_REQUEST)
 
-
     def getData(self, user, number_of_days, number_of_divisions):
         increments = number_of_days / number_of_divisions  # 365/14
         start_day = date.today() - timedelta(days=number_of_days)  # now - 365 days
@@ -384,12 +385,14 @@ class GetStatistics(APIView):
 
             slack_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                 timestamp__lt=end_day).select_subclasses(SlackEvent)
-            data["Slack"][str(start_day) + " - " + str(end_day)] = len(SlackEventSerializer(slack_events, many=True).data)
+            data["Slack"][str(start_day) + " - " + str(end_day)] = len(
+                SlackEventSerializer(slack_events, many=True).data)
 
             github_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                  timestamp__lt=end_day).select_subclasses(
                 GithubEvent)
-            data["Git"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(github_events, many=True).data)
+            data["Git"][str(start_day) + " - " + str(end_day)] = len(
+                GitHubEventSerializer(github_events, many=True).data)
 
             tg_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                              timestamp__lt=end_day).select_subclasses(
@@ -400,6 +403,3 @@ class GetStatistics(APIView):
             start_day = end_day
 
         return data
-
-
-
