@@ -1,7 +1,8 @@
 from django.db import models
 from authentication.models import User
 from multiselectfield import MultiSelectField
-
+from django_s3_storage.storage import S3Storage
+storage = S3Storage(aws_s3_bucket_name='seniorp')
 SIZE_CHOICES = [
     ('xs', 'XS'),
     ('s', 'S'),
@@ -26,9 +27,8 @@ class Product(models.Model):
     category = models.CharField(max_length=255)
 
     photo = models.ImageField(
-        null=True,
-        blank=True,
-        help_text="Upload your photo for Product"
+        storage=storage,
+        null=True
     )
     price = models.IntegerField(default=0)
     sizes_available = MultiSelectField(choices=SIZE_CHOICES,

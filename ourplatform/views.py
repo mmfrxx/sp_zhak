@@ -377,7 +377,6 @@ class GetStatistics(APIView):
         increments = number_of_days / number_of_divisions  # 365/14
         start_day = date.today() - timedelta(days=number_of_days)  # now - 365 days
         data = {"Slack": {}, "Telegram": {}, "Git": {}}
-        print(self.project)
         while (start_day <= (date.today())):
             end_day = start_day + timedelta(days=increments)  # this day last year + 26 days
             # make query Event.objects.all.get_subclasses(from start day; to end day, user= user, project = project)
@@ -385,14 +384,12 @@ class GetStatistics(APIView):
 
             slack_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                 timestamp__lt=end_day).select_subclasses(SlackEvent)
-            data["Slack"][str(start_day) + " - " + str(end_day)] = len(
-                SlackEventSerializer(slack_events, many=True).data)
+            data["Slack"][str(start_day) + " - " + str(end_day)] = len(SlackEventSerializer(slack_events, many=True).data)
 
             github_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                                  timestamp__lt=end_day).select_subclasses(
                 GithubEvent)
-            data["Git"][str(start_day) + " - " + str(end_day)] = len(
-                GitHubEventSerializer(github_events, many=True).data)
+            data["Git"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(github_events, many=True).data)
 
             tg_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
                                              timestamp__lt=end_day).select_subclasses(
