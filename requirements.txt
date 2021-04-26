@@ -21,4 +21,3 @@ python-decouple
 Pillow
 gunicorn
 django-s3-storage
-django-s3-storage
