@@ -18,4 +18,5 @@ urlpatterns = [
     path('delete-project/<int:pk>', DeleteProjectView.as_view(), name='delete-project' ),
     re_path(r'^get-statistics/(?P<pk>\w+)+', GetStatistics.as_view(), name='getStatistics'),
     # path('factory', makeEvents.as_view(), name='factory'),
+    path('get-info-project/<int:pk>', GetInfoAboutProject.as_view()),
 ]

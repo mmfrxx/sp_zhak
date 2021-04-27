@@ -9,6 +9,9 @@ from rest_framework_simplejwt.authentication \
 
 from authentication.models import User
 from authentication.serializers import UserSerializer
+from github_events.models import GithubAndUser, GithubAndProject
+from slackevents_sp.models import SlackProfile, ChannelProject
+from telegram_sp.models import TelegramProfile, GroupProject
 from .models import Project, \
     ProjectAndUser, Event, GithubEvent, SlackEvent, TelegramEvent
 from .serializers import ProjectSerializer, \
@@ -117,6 +120,35 @@ class Add_team_member(APIView):
             return Response("You are not allowed to do this.", HTTP_400_BAD_REQUEST)
         return Response("Project is required.", HTTP_400_BAD_REQUEST)
 
+class GetInfoAboutProject(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        project_pk = kwargs.get("pk")
+        if project_pk:
+            project_filter = Project.objects.filter(pk=project_pk)
+            if project_filter.exists():
+                project = project_filter.first()
+                data = dict()
+                data['isGithubBind'] = False
+                data['isTelegramBind'] = False
+                data['isSlackBind'] = False
+                data['slackBonus'] = project.slack_bonus
+                data['telegramBonus'] = project.telegram_bonus
+                data['githubBonus'] = project.git_bonus
+                if GithubAndProject.objects.filter(project=project).exists():
+                    data['isGithubBind'] = True
+                if ChannelProject.objects.filter(project=project).exists():
+                    data['isSlackBind'] = True
+                if GroupProject.objects.filter(project=project).exists():
+                    data['isTelegramBind'] = True
+                return Response(data, HTTP_200_OK)
+            return Response("Project doesn't exist", HTTP_400_BAD_REQUEST)
+        return Response("Project pk is required", HTTP_400_BAD_REQUEST)
+
 
 class Remove_team_member(APIView):
     authentication_classes = [JWTAuthentication]
@@ -158,6 +190,15 @@ class GetUserInfoView(APIView):
                 req_user_data = self.serializer_class(requested_user).data
                 if not user.is_manager and not user.is_organizationOwner and not user.is_admin and user.username != requested_user.username:
                     req_user_data['account_bonus'] = 0
+                req_user_data['isSlackBind'] = False
+                req_user_data['isTelegramBind'] = False
+                req_user_data['isGithubBind'] = False
+                if SlackProfile.objects.filter(user=requested_user).exists():
+                    req_user_data['isSlackBind'] = True
+                if TelegramProfile.objects.filter(user=requested_user).exists():
+                    req_user_data['isTelegramBind'] = True
+                if GithubAndUser.objects.filter(user=requested_user).exists():
+                    req_user_data['isGithubBind'] = True
                 return Response(data=req_user_data, status=HTTP_200_OK)
             return Response('User does not exist', HTTP_400_BAD_REQUEST)
         return Response('Please activate your account', HTTP_400_BAD_REQUEST)
