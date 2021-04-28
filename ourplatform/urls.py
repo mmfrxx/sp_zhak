@@ -9,7 +9,7 @@ urlpatterns = [
     path('add_team_member', Add_team_member.as_view(), name='add_team_member'),
     path('remove_team_member', Remove_team_member.as_view(), name='remove_team_member'),
     path('get-user-info/<int:pk>', GetUserInfoView.as_view(), name='get-user-info'),
-    path('get-projects-for-user/<int:pk>', GetProjectsForUserView.as_view()),
+    path('get-projects-for-user/<int:pk>', GetProjectsForUserView.as_view(), name='get-projects-for-user'),
     path('get-users-of-project/<int:pk>', GetUsersOfProjectView.as_view()),
     path('reduce-points', ReducePoints.as_view()),
     re_path(r'^get_project_activities/(?P<pk>[0-9]+)', GetProjectEvents.as_view(), name='get_project_events'),

@@ -100,7 +100,7 @@ class ChannelBindPlatform(APIView):
             return Response("You are not member of this project", status=status.HTTP_403_FORBIDDEN)
         ChannelProject.objects.create(channel_id=channel_id, project_id=project_id, channel_name=channel_name)
         channel_code.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("ok", status=status.HTTP_200_OK)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -112,7 +112,7 @@ class ChannelBindPlatform(APIView):
         if ChannelProject.objects.filter(project=project).first() is None:
             return Response("Project is not bound")
         ChannelProject.objects.filter(project=project).delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("ok", status=status.HTTP_200_OK)
 
 
 class SlackProfileBind(APIView):
@@ -156,7 +156,7 @@ class SlackProfilePlatform(APIView):
             return Response("Account or profile is already bound", status=status.HTTP_403_FORBIDDEN)
         SlackProfile.objects.create(profile_id=profile_id, user=user, profile_name=profile_code.first().profile_name)
         profile_code.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("good", status=status.HTTP_200_OK)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -165,4 +165,4 @@ class SlackProfilePlatform(APIView):
         if SlackProfile.objects.filter(user=user).first() is None:
             return Response("Account is not bound")
         SlackProfile.objects.filter(user=user).delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("ok", status=status.HTTP_200_OK)

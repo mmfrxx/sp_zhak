@@ -32,6 +32,7 @@ class ProjectTests(APITestCase):
         self.add_team_member_url = reverse('add_team_member')
         self.delete_team_member_url = reverse('remove_team_member')
         self.get_user_info = reverse('get-user-info', kwargs={"pk": 1})
+        self.get_projects_for_user = reverse('get-projects-for-user', kwargs={"pk":1})
 
     def test_ProjectView_post(self):
         if self.login_response is True:
@@ -129,6 +130,15 @@ class ProjectTests(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(len(response.content_params), 7)
 
+    def test_GetProjectsForUserView_get(self):
+        if self.login_response:
+            data = {
+                "name": "project",
+                "telegram_bonus": 40,
+                "slack_bonus": 30,
+                "git_bonus": 20
+            }
+            self.client.post(self.create_url, data, format="json")
     # def test1(self):
     #     self.assertEqual(1, 1)
     #

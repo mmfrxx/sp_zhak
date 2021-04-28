@@ -127,7 +127,7 @@ class TelegramProfilePlatform(APIView):
             return Response("Account or profile is already bound", status=status.HTTP_403_FORBIDDEN)
         TelegramProfile.objects.create(profile_id=profile_id, user=user, profile_name=profile_code.first().profile_name)
         profile_code.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("good",status=status.HTTP_200_OK)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -136,7 +136,7 @@ class TelegramProfilePlatform(APIView):
         if TelegramProfile.objects.filter(user=user).first() is None:
             return Response("Account is not bound")
         TelegramProfile.objects.filter(user=user).delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("good",status=status.HTTP_200_OK)
 
 
 class GroupBindPlatform(APIView):
@@ -161,7 +161,7 @@ class GroupBindPlatform(APIView):
             return Response("You are not member of this project", status=status.HTTP_403_FORBIDDEN)
         GroupProject.objects.create(group_id=group_id, project_id=project_id, group_name=group_name)
         group_code.delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("good", status=status.HTTP_200_OK)
 
     @staticmethod
     def delete(request, *args, **kwargs):
@@ -173,4 +173,4 @@ class GroupBindPlatform(APIView):
         if GroupProject.objects.filter(project=project).first() is None:
             return Response("Project is not bound")
         GroupProject.objects.filter(project=project).delete()
-        return Response(status=status.HTTP_200_OK)
+        return Response("good",status=status.HTTP_200_OK)
