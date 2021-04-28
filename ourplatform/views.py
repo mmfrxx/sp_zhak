@@ -139,7 +139,7 @@ class GetInfoAboutProject(APIView):
                 data['slackBonus'] = project.slack_bonus
                 data['telegramBonus'] = project.telegram_bonus
                 data['githubBonus'] = project.git_bonus
-                data['teamLead'] = project.team_lead
+                data['teamLead'] = project.team_lead.username
                 if GithubAndProject.objects.filter(project=project).exists():
                     data['isGithubBind'] = True
                 if ChannelProject.objects.filter(project=project).exists():
