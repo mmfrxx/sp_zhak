@@ -423,19 +423,17 @@ class GetStatistics(APIView):
             # make query Event.objects.all.get_subclasses(from start day; to end day, user= user, project = project)
             # and then save it in dict
 
-            slack_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
-                                                timestamp__lt=end_day).select_subclasses(SlackEvent)
-            data["Slack"][str(start_day) + " - " + str(end_day)] = len(SlackEventSerializer(slack_events, many=True).data)
+            slack_events = SlackEvent.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                                timestamp__lt=end_day).count()
+            github_events =GithubEvent.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                                timestamp__lt=end_day).count()
+            tg_events = TelegramEvent.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
+                                                timestamp__lt=end_day).count()
+            data["Slack"][str(start_day) + " - " + str(end_day)] = slack_events
+            data["Git"][str(start_day) + " - " + str(end_day)] = github_events
+            data["Telegram"][str(start_day) + " - " + str(end_day)] = tg_events
 
-            github_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
-                                                 timestamp__lt=end_day).select_subclasses(
-                GithubEvent)
-            data["Git"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(github_events, many=True).data)
 
-            tg_events = Event.objects.filter(project=self.project, user=user, timestamp__gte=start_day,
-                                             timestamp__lt=end_day).select_subclasses(
-                TelegramEvent)
-            data["Telegram"][str(start_day) + " - " + str(end_day)] = len(GitHubEventSerializer(tg_events, many=True).data)
 
             # start_day = end_day + timedelta(days=1)
             start_day = end_day
