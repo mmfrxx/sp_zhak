@@ -11,6 +11,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
 class PurchaseSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
+    product_photo = serializers.ImageField(source='product.photo', read_only=True)
+    product_price = serializers.CharField(source='product.price', read_only=True)
+    product_description = serializers.CharField(source='product.description', read_only=True)
     class Meta:
         model = Purchases
-        fields = ['pk', 'user', 'product', 'product_name', 'chosen_size', 'quantity', 'purchase_status']
+        fields = ['pk', 'user', 'product', 'product_name', 'chosen_size', 'quantity', 'purchase_status', 'product_photo', 'product_price', 'product_description']
