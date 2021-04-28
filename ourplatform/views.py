@@ -139,6 +139,7 @@ class GetInfoAboutProject(APIView):
                 data['slackBonus'] = project.slack_bonus
                 data['telegramBonus'] = project.telegram_bonus
                 data['githubBonus'] = project.git_bonus
+                data['teamLead'] = project.team_lead
                 if GithubAndProject.objects.filter(project=project).exists():
                     data['isGithubBind'] = True
                 if ChannelProject.objects.filter(project=project).exists():
@@ -237,6 +238,9 @@ class GetUsersOfProjectView(APIView):
             if not user.is_manager and not user.is_organizationOwner and not user.is_admin:
                 for user in users:
                     user['account_bonus'] = 0
+                    user['is_team_lead'] = False
+                    if project.team_lead == user:
+                        user['is_team_lead'] = True
             return Response(users, HTTP_200_OK)
         return Response('Project does not exist', HTTP_400_BAD_REQUEST)
 
