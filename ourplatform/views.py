@@ -241,6 +241,10 @@ class GetUsersOfProjectView(APIView):
                     user['is_team_lead'] = False
                     if project.team_lead == user:
                         user['is_team_lead'] = True
+            for user in users:
+                user['is_team_lead'] = False
+                if project.team_lead == user:
+                    user['is_team_lead'] = True
             return Response(users, HTTP_200_OK)
         return Response('Project does not exist', HTTP_400_BAD_REQUEST)
 
