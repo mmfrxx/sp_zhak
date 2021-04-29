@@ -110,7 +110,7 @@ class CreateWebHook(APIView):
         response = requests.post('https://api.github.com/repos/'+repo+'/hooks',
                                  headers=headers, data=data)
         if response.status_code == 201:
-            github_repo_id= self.get_repo_id(user_github_account.token, repo)
+            github_repo_id= self.get_repo_id(user_github_account.personal_access_token, repo)
             webhook_id = response.json()['id']
             repo_info = repo.split("/")
             GithubAndProject.objects.create(project=project, github_repo_name = repo_info[1], github_repo_id = github_repo_id, webhook_id = webhook_id, repo_owner = repo_info[0])
