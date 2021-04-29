@@ -14,10 +14,10 @@ from ourplatform.models import GithubEvent, Project
 from ourplatform.serializers import GitHubEventSerializer
 import os
 
+
 GITHUB_CLIENT_SECRET = getattr(settings, 'GITHUB_CLIENT_SECRET', None)
 GITHUB_CLIENT_ID = getattr(settings, 'GITHUB_CLIENT_ID', None)
 GITHUB_DEVELOPER_KEY = getattr(settings, 'GITHUB_DEVELOPER_KEY', None)
-
 
 class GithubPage(APIView):
     def get(self, request):
@@ -36,6 +36,7 @@ class GithubAuth(APIView):
     def post(self, request, *args, **kwargs):
         user = request.user
         code = request.data.get('code')
+        print(code)
         if code:
             token = self.exchange_code_to_token(code)
             login = self.get_account_login(token)
@@ -45,9 +46,9 @@ class GithubAuth(APIView):
 
     def exchange_code_to_token(self, code):
         data = {"client_id": GITHUB_CLIENT_ID,
-                "client_secret": GITHUB_CLIENT_SECRET,
-                "code": code
-                }
+                 "client_secret": GITHUB_CLIENT_SECRET,
+                 "code": code
+                 }
         response = requests.post('https://github.com/login/oauth/access_token', params=data)
         if response.status_code == 200:
             token_info = response.content.decode()
