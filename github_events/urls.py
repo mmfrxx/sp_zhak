@@ -6,5 +6,6 @@ urlpatterns = [
     path('code', GithubAuth.as_view()),
     path('connect_to_repo/<int:pk>', CreateWebHook.as_view()),
     path('remove_webhook/<int:pk>', DeleteHook.as_view()),
-    path('unbind_github_account',UnbindGithubAccount.as_view() )
+    path('unbind_github_account',UnbindGithubAccount.as_view() ),
+path('personal_acces_token',GetPersonalAccesToken.as_view() )
     ]

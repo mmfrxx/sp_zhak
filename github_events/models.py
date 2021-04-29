@@ -14,3 +14,4 @@ class GithubAndUser(models.Model):
     login = models.CharField(max_length=255, db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     token = models.CharField(max_length=255, null=False)
+    personal_access_token = models.CharField(max_length=255, null=True)

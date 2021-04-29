@@ -88,9 +88,11 @@ class CreateWebHook(APIView):
 
         if not user_github_account:
             return Response("Authorize your github account", HTTP_400_BAD_REQUEST)
+        if not user_github_account.personal_access_token:
+            return Response("Personal access token needs to be set", HTTP_400_BAD_REQUEST)
         headers = {
             'Accept': 'application/vnd.github.v3+json',
-            'Authorization': 'token ' + GITHUB_DEVELOPER_KEY,
+            'Authorization': 'token ' + user_github_account.personal_access_token,
         }
         data = {
             "config":
@@ -213,3 +215,18 @@ class UnbindGithubAccount(APIView):
             return Response(HTTP_204_NO_CONTENT)
         return Response("No github account associated with the account")
 
+class GetPersonalAccesToken(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        if user:
+            personal_access_token = request.data.get('personal_access_token')
+            print(personal_access_token)
+            user_github_account = GithubAndUser.objects.filter(user=user).first()
+            if user_github_account:
+                user_github_account.personal_access_token = personal_access_token
+                user_github_account.save()
+                return Response('Personal access token added', HTTP_200_OK)
+        return Response("No github account associated with the account")
