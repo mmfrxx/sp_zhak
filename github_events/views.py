@@ -153,9 +153,7 @@ class PostEvent(APIView):
         user = github_account.user
         for i in range(len(event['commits'])):
             metadata = {
-                "modified_data": event['commits'][i]['modified'],
                 "message": event['commits'][i]['message'],
-                "link_to_commit": event['commits'][i]['url'],
             }
             GithubEvent.objects.create(project=project, user=user, type=type, repo=github_repo_name, metaData=metadata)
         self.assign_bonuses(user, project)
