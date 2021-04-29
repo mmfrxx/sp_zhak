@@ -33,7 +33,7 @@ class GithubAuth(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated, ]
 
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         user = request.user
         code = request.data.get('code')
         if code:
