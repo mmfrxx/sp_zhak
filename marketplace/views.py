@@ -48,14 +48,23 @@ class ProductListView(generics.ListAPIView):
 
 # deleting products for the admin
 
-class ProductDeleteView(generics.DestroyAPIView):
+class ProductDeleteView(GenericAPIView):
     authentication_classes = [JWTAuthentication]
     serializer_class = ProductSerializer
     permission_classes = [IsAdminOrMarketPlaceAdmin]
 
-    def get_queryset(self):
-        queryset = Product.objects.filter(pk=self.kwargs['pk'])
-        return queryset
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+        pk = kwargs.get("pk")
+
+        if user.is_admin or user.is_marketplace_admin:
+            queryset = Product.objects.filter(pk=self.kwargs['pk']).first()
+            if queryset:
+                queryset.delete()
+                return Response("Success", HTTP_204_NO_CONTENT)
+            return Response('No such product', HTTP_400_BAD_REQUEST)
+        return Response('You are not allowed to do this.', HTTP_400_BAD_REQUEST)
+
 
 
 # updating product information for the admin
