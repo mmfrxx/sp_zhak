@@ -188,13 +188,15 @@ class DeleteHook(APIView):
         project = Project.objects.filter(pk=project_pk).first()
         if not project:
             return Response("No such project found", HTTP_400_BAD_REQUEST)
+        user = request.user
+        user_github_account = GithubAndUser.objects.filter(user=user).first()
         github_webhook = GithubAndProject.objects.filter(project=project).first()
         owner = github_webhook.repo_owner
         webhook_id  = github_webhook.webhook_id
         repo_name = github_webhook.github_repo_name
         headers = {
             'Accept': 'application/vnd.github.v3+json',
-            'Authorization': 'token ' + GITHUB_DEVELOPER_KEY,
+            'Authorization': 'token ' + user_github_account.personal_access_token,
         }
         print(f'https://api.github.com/repos/{owner}/{repo_name}/hooks/{webhook_id}')
         response = requests.delete(f'https://api.github.com/repos/{owner}/{repo_name}/hooks/{webhook_id}',
