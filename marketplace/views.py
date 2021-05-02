@@ -54,16 +54,12 @@ class ProductDeleteView(GenericAPIView):
     permission_classes = [IsAdminOrMarketPlaceAdmin]
 
     def delete(self, request, *args, **kwargs):
-        user = request.user
-        pk = kwargs.get("pk")
+        queryset = Product.objects.filter(pk=self.kwargs['pk']).first()
+        if queryset:
+            queryset.delete()
+            return Response("Success", HTTP_204_NO_CONTENT)
+        return Response('No such product', HTTP_400_BAD_REQUEST)
 
-        if user.is_admin or user.is_marketplace_admin:
-            queryset = Product.objects.filter(pk=self.kwargs['pk']).first()
-            if queryset:
-                queryset.delete()
-                return Response("Success", HTTP_204_NO_CONTENT)
-            return Response('No such product', HTTP_400_BAD_REQUEST)
-        return Response('You are not allowed to do this.', HTTP_400_BAD_REQUEST)
 
 
 
@@ -114,6 +110,7 @@ class MakePurchaseView(GenericAPIView):
                     return Response("success", HTTP_200_OK)
                 return Response("Not enough bonus points: you have " + str(user.account_bonus) + " bonuses and you need " + str(cost) + " bonuses" , HTTP_400_BAD_REQUEST)
             return Response("No Product pk", HTTP_400_BAD_REQUEST)
+        return  Response("No requested user", HTTP_400_BAD_REQUEST)
 
 
 # past Purchases for the user
